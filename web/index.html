@@ -1,0 +1,5694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FaxWare OS</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <style>
+    /* ========================================
+       FAXWARE OS - DESIGN SYSTEM
+       ======================================== */
+    
+    :root {
+      /* Colors */
+      --bg-void: #050508;
+      --bg-deep: #0a0a10;
+      --bg-surface: #12121c;
+      --bg-elevated: #1a1a28;
+      --bg-glass: rgba(20, 20, 35, 0.7);
+      --bg-glass-light: rgba(30, 30, 50, 0.5);
+      
+      --text-primary: #f0f0f8;
+      --text-secondary: #a0a0b8;
+      --text-muted: #606078;
+      
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-tertiary: #06b6d4;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --info: #3b82f6;
+      
+      /* Gradients */
+      --gradient-accent: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      --gradient-glow: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      --gradient-surface: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
+      
+      /* Glass */
+      --glass-blur: 20px;
+      --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+      
+      /* Animations */
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+      
+      /* Sizing */
+      --sidebar-width: 72px;
+      --header-height: 56px;
+      --command-height: 64px;
+      --panel-gap: 24px;
+    }
+
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-void);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ========================================
+       APP SHELL
+       ======================================== */
+    
+    .app {
+      display: flex;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient background glow - animated */
+    .app::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: ambientShift 20s ease-in-out infinite;
+    }
+
+    @keyframes ambientShift {
+      0%, 100% { 
+        transform: translate(0, 0) rotate(0deg);
+        filter: hue-rotate(0deg);
+      }
+      25% { 
+        transform: translate(-5%, 5%) rotate(3deg);
+        filter: hue-rotate(15deg);
+      }
+      50% { 
+        transform: translate(5%, -5%) rotate(-2deg);
+        filter: hue-rotate(-10deg);
+      }
+      75% { 
+        transform: translate(-3%, -3%) rotate(1deg);
+        filter: hue-rotate(5deg);
+      }
+    }
+
+    /* Animated gradient border effect for cards */
+    .glow-border {
+      position: relative;
+    }
+
+    .glow-border::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(
+        45deg,
+        var(--accent-primary),
+        var(--accent-secondary),
+        var(--accent-tertiary),
+        var(--accent-primary)
+      );
+      background-size: 300% 300%;
+      animation: gradientBorder 4s ease infinite;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glow-border:hover::after {
+      opacity: 1;
+    }
+
+    @keyframes gradientBorder {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Shimmer effect for loading states */
+    .shimmer {
+      background: linear-gradient(
+        90deg,
+        var(--bg-surface) 25%,
+        var(--bg-elevated) 50%,
+        var(--bg-surface) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ========================================
+       SIDEBAR NAVIGATION
+       ======================================== */
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100%;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-right: var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      z-index: 100;
+      position: relative;
+    }
+
+    .sidebar-logo {
+      width: 52px;
+      height: 52px;
+      background: var(--gradient-accent);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      cursor: pointer;
+      transition: all 0.3s var(--ease-bounce);
+      position: relative;
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    .sidebar-logo::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-logo:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .sidebar-logo:hover::after {
+      opacity: 1;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 4px 20px var(--accent-glow); }
+      50% { box-shadow: 0 4px 30px var(--accent-glow), 0 0 40px var(--accent-glow); }
+    }
+
+    .nav-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-item {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+      position: relative;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-glass-light);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--bg-elevated);
+      color: var(--accent-primary);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: -16px;
+      width: 3px;
+      height: 24px;
+      background: var(--gradient-accent);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item .tooltip {
+      position: absolute;
+      left: 60px;
+      background: var(--bg-elevated);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+      transform: translateX(-8px);
+      z-index: 1000;
+      border: var(--glass-border);
+    }
+
+    .nav-item:hover .tooltip {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ========================================
+       MAIN CONTENT AREA
+       ======================================== */
+    
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      height: var(--header-height);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-bottom: var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 24px;
+    }
+
+    .header-stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .header-stat-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .header-stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .header-stat-dot.offline {
+      background: var(--error);
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    /* ========================================
+       PANELS CONTAINER
+       ======================================== */
+    
+    .panels-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panels {
+      display: flex;
+      height: 100%;
+      transition: transform 0.4s var(--ease-spring);
+    }
+
+    .panel {
+      min-width: 100%;
+      height: 100%;
+      padding: var(--panel-gap);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Panel scroll styling */
+    .panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .panel::-webkit-scrollbar-thumb {
+      background: var(--bg-elevated);
+      border-radius: 3px;
+    }
+
+    .panel::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* ========================================
+       DASHBOARD PANEL
+       ======================================== */
+    
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      grid-template-rows: auto 1fr;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .dashboard-welcome {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 24px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 20px;
+      border: var(--glass-border);
+    }
+
+    /* AI Core Visualization - replaces boring orb */
+    .orb-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      flex-shrink: 0;
+    }
+
+    .orb {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hexagonal AI Core */
+    .orb::before {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 52px;
+      background: var(--gradient-accent);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: coreRotate 8s linear infinite, corePulse 2s ease-in-out infinite;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .orb::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 35px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: coreRotate 6s linear infinite reverse, corePulse 2s ease-in-out infinite 0.5s;
+    }
+
+    /* AI Eye in center */
+    .ai-eye {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #fff 0%, #06b6d4 50%, transparent 70%);
+      border-radius: 50%;
+      z-index: 5;
+      animation: eyePulse 3s ease-in-out infinite;
+      box-shadow: 0 0 20px #06b6d4, 0 0 40px rgba(6, 182, 212, 0.5);
+    }
+
+    @keyframes coreRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes corePulse {
+      0%, 100% { opacity: 0.8; transform: rotate(0deg) scale(1); }
+      50% { opacity: 1; transform: rotate(180deg) scale(1.05); }
+    }
+
+    @keyframes eyePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px #06b6d4, 0 0 40px rgba(6, 182, 212, 0.5); }
+      50% { transform: scale(1.2); box-shadow: 0 0 30px #06b6d4, 0 0 60px rgba(6, 182, 212, 0.7); }
+    }
+
+    /* Neural Network Lines */
+    .neural-lines {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .neural-line {
+      position: absolute;
+      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+      height: 2px;
+      animation: neuralFlow 2s ease-in-out infinite;
+    }
+
+    .neural-line:nth-child(1) { top: 20%; left: -20%; width: 140%; transform: rotate(-15deg); animation-delay: 0s; }
+    .neural-line:nth-child(2) { top: 50%; left: -20%; width: 140%; transform: rotate(0deg); animation-delay: 0.5s; }
+    .neural-line:nth-child(3) { top: 80%; left: -20%; width: 140%; transform: rotate(15deg); animation-delay: 1s; }
+
+    @keyframes neuralFlow {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Data Particles */
+    .data-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-tertiary);
+      border-radius: 50%;
+      animation: particleOrbit 4s linear infinite;
+    }
+
+    .data-particle:nth-child(1) { animation-delay: 0s; }
+    .data-particle:nth-child(2) { animation-delay: 1s; }
+    .data-particle:nth-child(3) { animation-delay: 2s; }
+    .data-particle:nth-child(4) { animation-delay: 3s; }
+
+    @keyframes particleOrbit {
+      0% { transform: rotate(0deg) translateX(45px) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: rotate(360deg) translateX(45px) rotate(-360deg); opacity: 0; }
+    }
+
+    .orb-rings {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 50%;
+      animation: ringExpand 3s ease-out infinite;
+    }
+
+    .orb-rings:nth-child(2) { animation-delay: 1s; }
+    .orb-rings:nth-child(3) { animation-delay: 2s; }
+
+    @keyframes ringExpand {
+      0% { width: 60px; height: 60px; opacity: 0.8; border-color: rgba(99, 102, 241, 0.5); }
+      100% { width: 120px; height: 120px; opacity: 0; border-color: transparent; }
+    }
+
+    /* OLD ORB STYLES PRESERVED FOR COMPATIBILITY */
+    .orb-legacy {
+      box-shadow:
+        0 0 80px var(--accent-glow),
+        inset 0 0 30px rgba(255,255,255,0.1);
+      animation: orbBreathing 4s ease-in-out infinite;
+    }
+
+    .orb.thinking {
+      animation: orbThinking 1s ease-in-out infinite;
+    }
+
+    .orb.working {
+      animation: orbWorking 0.5s ease-in-out infinite;
+    }
+
+    @keyframes orbBreathing {
+      0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow);
+      }
+      50% { 
+        transform: scale(1.05); 
+        box-shadow: 0 0 60px var(--accent-glow), 0 0 100px var(--accent-glow);
+      }
+    }
+
+    @keyframes orbThinking {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(180deg); }
+    }
+
+    @keyframes orbWorking {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.15); filter: brightness(1.3); }
+    }
+
+    .orb-rings {
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px solid var(--accent-primary);
+      opacity: 0.3;
+      animation: ringPulse 3s ease-in-out infinite;
+    }
+
+    .orb-rings:nth-child(2) {
+      inset: -20px;
+      animation-delay: 0.5s;
+      opacity: 0.2;
+    }
+
+    .orb-rings:nth-child(3) {
+      inset: -30px;
+      animation-delay: 1s;
+      opacity: 0.1;
+    }
+
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.1; }
+    }
+
+    .welcome-content {
+      flex: 1;
+    }
+
+    .welcome-greeting {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .welcome-status {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--gradient-accent);
+      color: white;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: var(--glass-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-glass-light);
+    }
+
+    /* Stats Cards */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px;
+      border: var(--glass-border);
+      padding: 20px;
+      transition: all 0.3s var(--ease-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.05),
+        transparent
+      );
+      transition: left 0.5s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: var(--accent-primary);
+      box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+    }
+
+    .stat-card:hover::before {
+      left: 100%;
+    }
+
+    .stat-card-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-card-value {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'SF Mono', monospace;
+    }
+
+    .stat-card-value.success { color: var(--success); }
+    .stat-card-value.warning { color: var(--warning); }
+    .stat-card-value.info { color: var(--info); }
+
+    /* Quick Actions */
+    .dashboard-quick {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .quick-action {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border: var(--glass-border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-smooth);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quick-action::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .quick-action:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.25);
+    }
+
+    .quick-action:hover::before {
+      opacity: 1;
+    }
+
+    .quick-action:active {
+      transform: translateY(-2px) scale(0.98);
+    }
+
+    .quick-action-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      color: var(--accent-primary);
+    }
+
+    .quick-action-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .quick-action-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Activity Panel */
+    .activity-panel {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px;
+      border: var(--glass-border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-surface);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-title {
+      font-weight: 500;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       CHAT PANEL
+       ======================================== */
+    
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      max-width: 85%;
+      animation: messageSlide 0.3s var(--ease-spring);
+    }
+
+    @keyframes messageSlide {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .message-bubble {
+      padding: 14px 18px;
+      border-radius: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.user .message-bubble {
+      background: var(--gradient-accent);
+      color: white;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .message.assistant .message-bubble {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border: var(--glass-border);
+      border-radius: 18px 18px 18px 4px;
+    }
+
+    .message.system {
+      align-self: center;
+      max-width: 100%;
+    }
+
+    .message.system .message-bubble {
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
+    /* Tool Cards */
+    .tools-card {
+      margin-top: 12px;
+      background: var(--bg-deep);
+      border-radius: 12px;
+      border: var(--glass-border);
+      overflow: hidden;
+    }
+
+    .tools-header {
+      padding: 12px 16px;
+      background: rgba(99, 102, 241, 0.1);
+      border-bottom: var(--glass-border);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-item {
+      padding: 12px 16px;
+      border-bottom: var(--glass-border);
+    }
+
+    .tool-item:last-child {
+      border-bottom: none;
+    }
+
+    .tool-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--success);
+      margin-bottom: 6px;
+    }
+
+    .tool-name.error {
+      color: var(--error);
+    }
+
+    .tool-args, .tool-result {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      background: var(--bg-surface);
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-top: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .tool-args {
+      color: var(--text-muted);
+    }
+
+    .tool-result {
+      color: var(--text-secondary);
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    /* ========================================
+       TERMINAL PANEL
+       ======================================== */
+    
+    .terminal-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--bg-deep);
+      border-radius: 16px;
+      border: var(--glass-border);
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      padding: 12px 16px;
+      background: var(--bg-surface);
+      border-bottom: var(--glass-border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green { background: #28c840; }
+
+    .terminal-title {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .terminal-output {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .terminal-line {
+      margin-bottom: 4px;
+    }
+
+    .terminal-prompt {
+      color: var(--accent-primary);
+    }
+
+    .terminal-command {
+      color: var(--text-primary);
+    }
+
+    .terminal-output-text {
+      color: var(--text-secondary);
+    }
+
+    .terminal-input-line {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg-surface);
+      border-top: var(--glass-border);
+    }
+
+    .terminal-input-line .terminal-prompt {
+      margin-right: 8px;
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* ========================================
+       FILES PANEL
+       ======================================== */
+    
+    .files-panel {
+      display: flex;
+      height: 100%;
+      gap: 24px;
+    }
+
+    .files-tree {
+      width: 280px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px;
+      border: var(--glass-border);
+      padding: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .files-tree-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+
+    .tree-item:hover {
+      background: var(--bg-elevated);
+    }
+
+    .tree-item.active {
+      background: var(--bg-elevated);
+      color: var(--accent-primary);
+    }
+
+    .tree-item-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+    }
+
+    .tree-folder {
+      padding-left: 0;
+    }
+
+    .tree-folder-content {
+      padding-left: 20px;
+    }
+
+    .files-preview {
+      flex: 1;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px;
+      border: var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .files-preview-header {
+      padding: 16px 20px;
+      border-bottom: var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .files-preview-content {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      font-family: 'SF Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    /* ========================================
+       PROJECTS PANEL
+       ======================================== */
+    
+    .projects-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .projects-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px;
+      border: var(--glass-border);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-primary);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .project-card.new {
+      border: 2px dashed var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+      color: var(--text-muted);
+    }
+
+    .project-card.new:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .project-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    .project-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .project-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       COMMAND BAR
+       ======================================== */
+    
+    .command-bar {
+      height: var(--command-height);
+      padding: 0 24px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border-top: var(--glass-border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .command-input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .command-input {
+      width: 100%;
+      padding: 12px 18px;
+      padding-right: 50px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-elevated);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .command-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .command-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .command-send {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--gradient-accent);
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .command-send:hover {
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .command-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: translateY(-50%);
+    }
+
+    .command-send svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Model Selector */
+    .model-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-selector label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .model-select {
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-elevated);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .model-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* ========================================
+       LOADING SPINNER
+       ======================================== */
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ========================================
+       MODELS PANEL
+       ======================================== */
+    
+    .models-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .models-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .credits-display {
+      background: linear-gradient(135deg, #22c55e33, #16a34a33);
+      border: 1px solid #22c55e44;
+      border-radius: 12px;
+      padding: 12px 20px;
+      text-align: right;
+    }
+
+    .credits-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--success);
+      letter-spacing: 0.5px;
+    }
+
+    .credits-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--success);
+      font-family: 'SF Mono', monospace;
+    }
+
+    .models-filters {
+      display: flex;
+      gap: 12px;
+    }
+
+    .models-search {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-elevated);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .models-search:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .models-filter-select {
+      padding: 12px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-elevated);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+      padding-bottom: 20px;
+    }
+
+    .model-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border: var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+    }
+
+    .model-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .model-card.active {
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .model-card.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      min-height: 120px;
+    }
+
+    .model-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .model-provider {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .model-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .model-badges {
+      display: flex;
+      gap: 6px;
+    }
+
+    .model-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+    }
+
+    .model-badge.vision { background: #3b82f633; color: #60a5fa; }
+    .model-badge.tools { background: #8b5cf633; color: #a78bfa; }
+
+    .model-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .model-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .model-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .model-price {
+      color: var(--success);
+    }
+
+    /* ========================================
+       KNOWLEDGE PANEL
+       ======================================== */
+    
+    .knowledge-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .knowledge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .knowledge-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .knowledge-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--glass-blur));
+      border: var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+    }
+
+    .knowledge-card:hover {
+      border-color: var(--accent-primary);
+    }
+
+    .knowledge-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .knowledge-content {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .knowledge-tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .knowledge-tag {
+      padding: 4px 10px;
+      background: var(--bg-elevated);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       VOICE MODE
+       ======================================== */
+    
+    .voice-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-elevated);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s var(--ease-smooth);
+      position: relative;
+    }
+
+    .voice-btn:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .voice-btn.listening {
+      background: var(--error);
+      border-color: var(--error);
+      color: white;
+      animation: voicePulse 1s ease-in-out infinite;
+    }
+
+    .voice-btn.speaking {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: white;
+    }
+
+    @keyframes voicePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+
+    .voice-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Voice Waveform */
+    .voice-waveform {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 8px;
+      display: none;
+      gap: 3px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      border: var(--glass-border);
+    }
+
+    .voice-btn.listening .voice-waveform {
+      display: flex;
+    }
+
+    .waveform-bar {
+      width: 3px;
+      height: 20px;
+      background: var(--error);
+      border-radius: 2px;
+      animation: waveform 0.5s ease-in-out infinite;
+    }
+
+    .waveform-bar:nth-child(1) { animation-delay: 0s; }
+    .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+    .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+    .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+    .waveform-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes waveform {
+      0%, 100% { height: 8px; }
+      50% { height: 24px; }
+    }
+
+    /* Voice Status Toast */
+    .voice-toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--bg-elevated);
+      border: var(--glass-border);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease-spring);
+      z-index: 1000;
+    }
+
+    .voice-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .voice-toast-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voice-toast-icon.listening {
+      background: var(--error);
+    }
+
+    .voice-toast-icon.speaking {
+      background: var(--accent-primary);
+    }
+
+    /* TTS Toggle */
+    .tts-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .tts-toggle input {
+      accent-color: var(--accent-primary);
+    }
+
+    /* ========================================
+       MOOD INDICATOR
+       ======================================== */
+    
+    .mood-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-glass);
+      border-radius: 12px;
+      border: var(--glass-border);
+    }
+
+    .mood-emoji {
+      font-size: 24px;
+    }
+
+    .mood-info {
+      flex: 1;
+    }
+
+    .mood-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mood-value {
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .energy-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-surface);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: var(--gradient-accent);
+      border-radius: 3px;
+      transition: width 0.5s var(--ease-smooth);
+    }
+
+    .energy-fill.low { background: var(--error); }
+    .energy-fill.medium { background: var(--warning); }
+    .energy-fill.high { background: var(--success); }
+
+    /* ========================================
+       RELATIONSHIP METER
+       ======================================== */
+    
+    .relationship-meter {
+      padding: 16px;
+      background: var(--bg-glass);
+      border-radius: 12px;
+      border: var(--glass-border);
+    }
+
+    .relationship-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .relationship-level {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
+    .relationship-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-surface);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .relationship-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 4px;
+      transition: width 0.5s var(--ease-smooth);
+    }
+
+    .relationship-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       WATCH MODE PANEL
+       ======================================== */
+    
+    .watch-panel {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .watch-main {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .watch-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--bg-glass);
+      border-radius: 16px;
+      border: var(--glass-border);
+    }
+
+    .watch-status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .watch-status-dot.active {
+      background: var(--success);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .watch-status-text {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .watch-stop-btn {
+      padding: 8px 20px;
+      background: var(--error);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .watch-stop-btn:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    .watch-stop-btn:disabled {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .watch-log {
+      flex: 1;
+      background: var(--bg-glass);
+      border-radius: 16px;
+      border: var(--glass-border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .watch-log-header {
+      padding: 16px 20px;
+      border-bottom: var(--glass-border);
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .watch-log-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .watch-log-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-surface);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      animation: slideIn 0.2s var(--ease-spring);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .watch-log-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .watch-log-details {
+      flex: 1;
+    }
+
+    .watch-log-tool {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--accent-primary);
+    }
+
+    .watch-log-args {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .watch-log-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .watch-screenshots {
+      background: var(--bg-glass);
+      border-radius: 16px;
+      border: var(--glass-border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+
+    .screenshot-thumb {
+      aspect-ratio: 16/9;
+      background: var(--bg-surface);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .screenshot-thumb:hover {
+      border-color: var(--accent-primary);
+      transform: scale(1.02);
+    }
+
+    .screenshot-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ========================================
+       QUICK AUTOMATION BUTTONS
+       ======================================== */
+    
+    .automation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .automation-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 12px;
+      background: var(--bg-glass);
+      border: var(--glass-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-smooth);
+      color: var(--text-primary);
+    }
+
+    .automation-btn:hover {
+      background: var(--bg-elevated);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .automation-btn-icon {
+      font-size: 24px;
+    }
+
+    .automation-btn-label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ========================================
+       RECIPES PANEL
+       ======================================== */
+    
+    .recipes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .recipe-card {
+      padding: 16px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      border: var(--glass-border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .recipe-card:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-elevated);
+    }
+
+    .recipe-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .recipe-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .recipe-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       PARTICLES (Canvas)
+       ======================================== */
+    
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ========================================
+       ENTERPRISE: TOAST NOTIFICATIONS
+       ======================================== */
+    
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-elevated);
+      border: var(--glass-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      backdrop-filter: blur(20px);
+      pointer-events: auto;
+      animation: toastSlideIn 0.3s var(--ease-spring);
+      transform-origin: right center;
+    }
+
+    .toast.leaving {
+      animation: toastSlideOut 0.3s var(--ease-smooth) forwards;
+    }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(100px) scale(0.8); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @keyframes toastSlideOut {
+      from { opacity: 1; transform: translateX(0) scale(1); }
+      to { opacity: 0; transform: translateX(100px) scale(0.8); }
+    }
+
+    .toast-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .toast.success .toast-icon { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+    .toast.error .toast-icon { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+    .toast.warning .toast-icon { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .toast.info .toast-icon { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .toast-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .toast-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent-primary);
+      border-radius: 0 0 12px 12px;
+      animation: toastProgress linear forwards;
+    }
+
+    @keyframes toastProgress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    /* ========================================
+       ENTERPRISE: COMMAND PALETTE (Ctrl+K)
+       ======================================== */
+    
+    .command-palette-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 10001;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 15vh;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .command-palette-overlay.active {
+      display: flex;
+    }
+
+    .command-palette {
+      width: 600px;
+      max-width: 90vw;
+      background: var(--bg-surface);
+      border: var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      overflow: hidden;
+      animation: paletteSlideIn 0.2s var(--ease-spring);
+    }
+
+    @keyframes paletteSlideIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .command-palette-input-wrapper {
+      padding: 16px;
+      border-bottom: var(--glass-border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .command-palette-icon {
+      color: var(--text-muted);
+    }
+
+    .command-palette-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .command-palette-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .command-palette-kbd {
+      background: var(--bg-elevated);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .command-palette-results {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .command-palette-section {
+      margin-bottom: 12px;
+    }
+
+    .command-palette-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    .command-palette-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .command-palette-item:hover,
+    .command-palette-item.selected {
+      background: var(--bg-elevated);
+    }
+
+    .command-palette-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .command-palette-item-content {
+      flex: 1;
+    }
+
+    .command-palette-item-title {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .command-palette-item-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .command-palette-item-shortcut {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    /* ========================================
+       ENTERPRISE: SETTINGS PANEL
+       ======================================== */
+    
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 10002;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-overlay.active {
+      display: flex;
+    }
+
+    .settings-modal {
+      width: 700px;
+      max-width: 90vw;
+      max-height: 80vh;
+      background: var(--bg-surface);
+      border: var(--glass-border);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      animation: modalSlideIn 0.3s var(--ease-spring);
+    }
+
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .settings-header {
+      padding: 20px 24px;
+      border-bottom: var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .settings-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .settings-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .settings-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .settings-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .settings-nav {
+      width: 200px;
+      border-right: var(--glass-border);
+      padding: 16px;
+    }
+
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .settings-nav-item:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .settings-nav-item.active {
+      background: var(--bg-elevated);
+      color: var(--accent-primary);
+    }
+
+    .settings-content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .settings-section {
+      margin-bottom: 32px;
+    }
+
+    .settings-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: var(--glass-border);
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-label {
+      font-size: 14px;
+    }
+
+    .settings-label-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .settings-toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .settings-toggle.active {
+      background: var(--accent-primary);
+    }
+
+    .settings-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .settings-toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .settings-input {
+      background: var(--bg-elevated);
+      border: var(--glass-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-size: 14px;
+      width: 200px;
+      transition: all 0.2s;
+    }
+
+    .settings-input:focus {
+      border-color: var(--accent-primary);
+      outline: none;
+    }
+
+    .settings-select {
+      background: var(--bg-elevated);
+      border: var(--glass-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ========================================
+       ENTERPRISE: ONBOARDING WIZARD
+       ======================================== */
+    
+    .onboarding-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-void);
+      z-index: 10003;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .onboarding-overlay.active {
+      display: flex;
+    }
+
+    .onboarding-wizard {
+      width: 500px;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .onboarding-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px var(--accent-glow);
+    }
+
+    .onboarding-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .onboarding-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .onboarding-subtitle {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 48px;
+    }
+
+    .onboarding-steps {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .onboarding-step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      transition: all 0.3s;
+    }
+
+    .onboarding-step-dot.active {
+      background: var(--accent-primary);
+      width: 32px;
+      border-radius: 5px;
+    }
+
+    .onboarding-step-dot.completed {
+      background: var(--success);
+    }
+
+    .onboarding-content {
+      background: var(--bg-surface);
+      border: var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .onboarding-input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .onboarding-input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+
+    .onboarding-input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text-primary);
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .onboarding-input:focus {
+      border-color: var(--accent-primary);
+      outline: none;
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .onboarding-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .onboarding-btn {
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .onboarding-btn-primary {
+      background: var(--gradient-accent);
+      color: white;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .onboarding-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .onboarding-btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+    }
+
+    /* ========================================
+       ENTERPRISE: UPDATE NOTIFICATION
+       ======================================== */
+    
+    .update-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-elevated);
+      border: 1px solid var(--accent-primary);
+      border-radius: 14px;
+      padding: 16px 24px;
+      display: none;
+      align-items: center;
+      gap: 16px;
+      z-index: 9999;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      animation: bannerSlideUp 0.3s var(--ease-spring);
+    }
+
+    .update-banner.active {
+      display: flex;
+    }
+
+    @keyframes bannerSlideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .update-banner-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .update-banner-content h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .update-banner-content p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .update-banner-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .update-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .update-btn-primary {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .update-btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    
+    @media (max-width: 1024px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      
+      .activity-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      
+      .header-stats {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+  
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo" style="padding: 0; overflow: hidden;">
+        <img src="/assets/logo.png" alt="FaxWare" style="width: 100%; height: 100%; object-fit: contain; border-radius: 14px; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+      </div>
+      
+      <div class="nav-items">
+        <button class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <span class="tooltip">Dashboard</span>
+        </button>
+        
+        <button class="nav-item" data-panel="chat" onclick="switchPanel('chat')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span class="tooltip">Chat</span>
+        </button>
+        
+        <button class="nav-item" data-panel="terminal" onclick="switchPanel('terminal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 17 10 11 4 5"/>
+            <line x1="12" y1="19" x2="20" y2="19"/>
+          </svg>
+          <span class="tooltip">Terminal</span>
+        </button>
+        
+        <button class="nav-item" data-panel="files" onclick="switchPanel('files')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span class="tooltip">Files</span>
+        </button>
+        
+        <button class="nav-item" data-panel="projects" onclick="switchPanel('projects')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          <span class="tooltip">Projects</span>
+        </button>
+        
+        <button class="nav-item" data-panel="models" onclick="switchPanel('models')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+          <span class="tooltip">Models</span>
+        </button>
+        
+        <button class="nav-item" data-panel="knowledge" onclick="switchPanel('knowledge')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span class="tooltip">Knowledge</span>
+        </button>
+        
+        <button class="nav-item" data-panel="watch" onclick="switchPanel('watch')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+            <line x1="12" y1="2" x2="12" y2="6"/>
+            <line x1="12" y1="18" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="6" y2="12"/>
+            <line x1="18" y1="12" x2="22" y2="12"/>
+          </svg>
+          <span class="tooltip">Watch Mode</span>
+        </button>
+      </div>
+      
+      <div class="sidebar-footer">
+        <button class="nav-item" onclick="openSettings()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span class="tooltip">Settings</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <div>
+            <h1 class="header-title" id="panelTitle">Dashboard</h1>
+            <p class="header-subtitle" id="panelSubtitle">Welcome back</p>
+          </div>
+        </div>
+        <div class="header-stats">
+          <div class="header-stat">
+            <div class="header-stat-dot" id="statusDot"></div>
+            <span id="statusText">Online</span>
+          </div>
+          <div class="header-stat">
+            <span>Tokens:</span>
+            <span class="header-stat-value" id="tokenCount">0</span>
+          </div>
+          <div class="header-stat">
+            <span>Cost:</span>
+            <span class="header-stat-value" id="costDisplay">$0.00</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Panels Container -->
+      <div class="panels-wrapper">
+        <div class="panels" id="panels">
+          
+          <!-- Dashboard Panel -->
+          <section class="panel" id="panel-dashboard">
+            <div class="dashboard">
+              <!-- Welcome -->
+              <div class="dashboard-welcome">
+                <div class="orb-container">
+                  <!-- Neural Network Lines -->
+                  <div class="neural-lines">
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                  </div>
+                  <!-- AI Core with Eye -->
+                  <div class="orb" id="orb">
+                    <div class="ai-eye"></div>
+                  </div>
+                  <!-- Orbiting Data Particles -->
+                  <div class="data-particle"></div>
+                  <div class="data-particle"></div>
+                  <div class="data-particle"></div>
+                  <div class="data-particle"></div>
+                  <!-- Expanding Rings -->
+                  <div class="orb-rings"></div>
+                  <div class="orb-rings"></div>
+                  <div class="orb-rings"></div>
+                </div>
+                <div class="welcome-content">
+                  <h2 class="welcome-greeting" id="greeting">Good evening</h2>
+                  <p class="welcome-status" id="welcomeStatus">FaxWare is ready. How can I help?</p>
+                  <div class="welcome-actions">
+                    <button class="btn btn-primary" onclick="switchPanel('chat')">Start Chat</button>
+                    <button class="btn btn-secondary" onclick="switchPanel('watch')">Watch Mode</button>
+                  </div>
+                </div>
+                
+                <!-- Mood Indicator -->
+                <div class="mood-indicator" id="moodIndicator">
+                  <div class="mood-emoji" id="moodEmoji">😊</div>
+                  <div class="mood-info">
+                    <div class="mood-label">Mood</div>
+                    <div class="mood-value" id="moodValue">Neutral</div>
+                    <div class="energy-bar">
+                      <div class="energy-fill high" id="energyFill" style="width: 100%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Relationship Meter -->
+              <div class="relationship-meter" style="grid-column: 1 / -1;">
+                <div class="relationship-header">
+                  <span class="section-title" style="margin: 0;">Our Relationship</span>
+                  <span class="relationship-level" id="relationshipLevel">New Friend</span>
+                </div>
+                <div class="relationship-bar">
+                  <div class="relationship-fill" id="relationshipFill" style="width: 5%"></div>
+                </div>
+                <div class="relationship-stats">
+                  <span id="interactionCount">0 interactions</span>
+                  <span id="firstMet">Just met</span>
+                </div>
+              </div>
+
+              <!-- Main Area -->
+              <div class="dashboard-quick">
+                <!-- Stats -->
+                <div class="dashboard-stats">
+                  <div class="stat-card">
+                    <div class="stat-card-label">Session Uptime</div>
+                    <div class="stat-card-value" id="uptimeDisplay">0s</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-label">Memory Items</div>
+                    <div class="stat-card-value info" id="memoryDisplay">0</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-label">Tools Used</div>
+                    <div class="stat-card-value" id="toolsDisplay">0</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-label">Active Model</div>
+                    <div class="stat-card-value" id="modelDisplay" style="font-size: 14px;">gpt-4o-mini</div>
+                  </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div>
+                  <h3 class="section-title">Quick Actions</h3>
+                  <div class="quick-grid">
+                    <button class="quick-action" onclick="quickAction('Create a new web project')">
+                      <div class="quick-action-icon">🌐</div>
+                      <div class="quick-action-title">Web Project</div>
+                      <div class="quick-action-desc">Create a new website</div>
+                    </button>
+                    <button class="quick-action" onclick="quickAction('Show system status')">
+                      <div class="quick-action-icon">📊</div>
+                      <div class="quick-action-title">System Status</div>
+                      <div class="quick-action-desc">Check health</div>
+                    </button>
+                    <button class="quick-action" onclick="quickAction('Search the web for latest tech news')">
+                      <div class="quick-action-icon">🔍</div>
+                      <div class="quick-action-title">Web Search</div>
+                      <div class="quick-action-desc">Find information</div>
+                    </button>
+                    <button class="quick-action" onclick="quickAction('What can you do?')">
+                      <div class="quick-action-icon">❓</div>
+                      <div class="quick-action-title">Help</div>
+                      <div class="quick-action-desc">What I can do</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Activity -->
+              <div class="activity-panel">
+                <h3 class="section-title">Recent Activity</h3>
+                <div class="activity-list" id="activityList">
+                  <div class="activity-item">
+                    <div class="activity-icon">🚀</div>
+                    <div class="activity-content">
+                      <div class="activity-title">FaxWare started</div>
+                      <div class="activity-time">Just now</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chat Panel -->
+          <section class="panel" id="panel-chat">
+            <div class="chat-panel">
+              <div class="chat-messages" id="chatMessages">
+                <div class="message system">
+                  <div class="message-bubble">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                      <img src="/assets/logo.png" alt="FaxWare" style="width: 32px; height: 32px; border-radius: 8px;">
+                      <strong style="color: var(--accent-primary);">FaxWare OS</strong>
+                    </div>
+                    I'm ready to help! I can:
+                    <ul style="margin: 8px 0 0 16px; color: var(--text-secondary);">
+                      <li>Control your PC - open apps, browse websites, send messages</li>
+                      <li>Create projects, write code, manage files</li>
+                      <li>Search the web for information</li>
+                      <li>Remember our conversations and preferences</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Terminal Panel -->
+          <section class="panel" id="panel-terminal">
+            <div class="terminal-panel">
+              <div class="terminal-header">
+                <div class="terminal-dots">
+                  <div class="terminal-dot red"></div>
+                  <div class="terminal-dot yellow"></div>
+                  <div class="terminal-dot green"></div>
+                </div>
+                <span class="terminal-title">PowerShell</span>
+              </div>
+              <div class="terminal-output" id="terminalOutput">
+                <div class="terminal-line">
+                  <span class="terminal-output-text">FaxWare Terminal v1.0.0</span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-output-text">Type commands or ask FaxWare for help.</span>
+                </div>
+                <div class="terminal-line">&nbsp;</div>
+              </div>
+              <div class="terminal-input-line">
+                <span class="terminal-prompt">PS&gt;</span>
+                <input type="text" class="terminal-input" id="terminalInput" placeholder="Enter command..." onkeydown="handleTerminalInput(event)">
+              </div>
+            </div>
+          </section>
+
+          <!-- Files Panel -->
+          <section class="panel" id="panel-files">
+            <div class="files-panel">
+              <div class="files-tree">
+                <div class="files-tree-header">
+                  <h3 class="section-title" style="margin:0">Files</h3>
+                  <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="refreshFiles()">Refresh</button>
+                </div>
+                <div id="fileTree">
+                  <div class="tree-item" onclick="loadFile('server.js')">
+                    <span class="tree-item-icon">📄</span>
+                    <span>server.js</span>
+                  </div>
+                  <div class="tree-item" onclick="loadFile('config.json')">
+                    <span class="tree-item-icon">📄</span>
+                    <span>config.json</span>
+                  </div>
+                  <div class="tree-item" onclick="loadFile('memory.json')">
+                    <span class="tree-item-icon">📄</span>
+                    <span>memory.json</span>
+                  </div>
+                </div>
+              </div>
+              <div class="files-preview">
+                <div class="files-preview-header">
+                  <span id="previewFileName">Select a file</span>
+                  <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" id="editFileBtn" style="display:none;">Edit</button>
+                </div>
+                <pre class="files-preview-content" id="previewContent">Select a file from the tree to preview its contents.</pre>
+              </div>
+            </div>
+          </section>
+
+          <!-- Projects Panel -->
+          <section class="panel" id="panel-projects">
+            <div class="projects-panel">
+              <div class="projects-header">
+                <div>
+                  <h2 style="font-size: 20px; margin-bottom: 4px;">Projects</h2>
+                  <p style="color: var(--text-secondary); font-size: 14px;">Manage your workspaces</p>
+                </div>
+              </div>
+              <div class="projects-grid" id="projectsGrid">
+                <div class="project-card new" onclick="createProject()">
+                  <div style="font-size: 32px; margin-bottom: 8px;">+</div>
+                  <div>New Project</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Models Panel -->
+          <section class="panel" id="panel-models">
+            <div class="models-panel">
+              <div class="models-header">
+                <div>
+                  <h2 style="font-size: 20px; margin-bottom: 4px;">AI Models</h2>
+                  <p style="color: var(--text-secondary); font-size: 14px;">OpenRouter Integration</p>
+                </div>
+                <div class="credits-display" id="creditsDisplay">
+                  <div class="credits-label">Credits</div>
+                  <div class="credits-value" id="creditsValue">Loading...</div>
+                </div>
+              </div>
+              
+              <div class="models-filters">
+                <input type="text" class="models-search" id="modelsSearch" placeholder="Search models..." oninput="filterModels()">
+                <select class="models-filter-select" id="providerFilter" onchange="filterModels()">
+                  <option value="">All Providers</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic</option>
+                  <option value="google">Google</option>
+                  <option value="meta-llama">Meta</option>
+                  <option value="mistralai">Mistral</option>
+                </select>
+              </div>
+              
+              <div class="models-grid" id="modelsGrid">
+                <div class="model-card loading">
+                  <div class="spinner"></div>
+                  <span>Loading models...</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Knowledge Panel -->
+          <section class="panel" id="panel-knowledge">
+            <div class="knowledge-panel">
+              <div class="knowledge-header">
+                <div>
+                  <h2 style="font-size: 20px; margin-bottom: 4px;">Knowledge Base</h2>
+                  <p style="color: var(--text-secondary); font-size: 14px;">Learned procedures and information</p>
+                </div>
+                <button class="btn btn-primary" onclick="addKnowledge()">+ Add Entry</button>
+              </div>
+              
+              <div class="knowledge-grid" id="knowledgeGrid">
+                <div class="knowledge-empty">
+                  <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                  <h3>No entries yet</h3>
+                  <p style="color: var(--text-muted); margin-top: 8px;">FaxWare will learn and store procedures here</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Watch Mode Panel -->
+          <section class="panel" id="panel-watch">
+            <div class="watch-panel">
+              <div class="watch-main">
+                <!-- Status Bar -->
+                <div class="watch-status">
+                  <div class="watch-status-dot" id="watchStatusDot"></div>
+                  <span class="watch-status-text" id="watchStatusText">Automation Idle</span>
+                  <button class="watch-stop-btn" id="watchStopBtn" onclick="stopAutomation()" disabled>Stop</button>
+                </div>
+
+                <!-- Quick Automation Buttons -->
+                <div style="background: var(--bg-glass); border-radius: 16px; border: var(--glass-border); padding: 16px;">
+                  <h3 class="section-title">Quick Automation</h3>
+                  <div class="automation-grid">
+                    <button class="automation-btn" onclick="runQuickAutomation('discord')">
+                      <span class="automation-btn-icon">💬</span>
+                      <span class="automation-btn-label">Discord</span>
+                    </button>
+                    <button class="automation-btn" onclick="runQuickAutomation('email')">
+                      <span class="automation-btn-icon">📧</span>
+                      <span class="automation-btn-label">Email</span>
+                    </button>
+                    <button class="automation-btn" onclick="runQuickAutomation('browser')">
+                      <span class="automation-btn-icon">🌐</span>
+                      <span class="automation-btn-label">Browser</span>
+                    </button>
+                    <button class="automation-btn" onclick="runQuickAutomation('spotify')">
+                      <span class="automation-btn-icon">🎵</span>
+                      <span class="automation-btn-label">Spotify</span>
+                    </button>
+                    <button class="automation-btn" onclick="runQuickAutomation('code')">
+                      <span class="automation-btn-icon">💻</span>
+                      <span class="automation-btn-label">VS Code</span>
+                    </button>
+                    <button class="automation-btn" onclick="runQuickAutomation('screenshot')">
+                      <span class="automation-btn-icon">📸</span>
+                      <span class="automation-btn-label">Screenshot</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Automation Log -->
+                <div class="watch-log">
+                  <div class="watch-log-header">
+                    <span>Automation Log</span>
+                    <span id="watchLogCount" style="color: var(--text-muted);">0 actions</span>
+                  </div>
+                  <div class="watch-log-content" id="watchLogContent">
+                    <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+                      <div style="font-size: 48px; margin-bottom: 16px;">🤖</div>
+                      <p>No automation activity yet</p>
+                      <p style="font-size: 12px; margin-top: 8px;">Use quick buttons above or ask FaxWare to control your PC</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Saved Recipes -->
+                <div style="background: var(--bg-glass); border-radius: 16px; border: var(--glass-border); padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="section-title" style="margin: 0;">Saved Recipes</h3>
+                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="createRecipe()">+ New</button>
+                  </div>
+                  <div class="recipes-list" id="recipesList">
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                      Loading recipes...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Screenshots Sidebar -->
+              <div class="watch-screenshots">
+                <h3 class="section-title">Recent Screenshots</h3>
+                <div class="screenshots-grid" id="screenshotsGrid">
+                  <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">
+                    No screenshots yet
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- Command Bar -->
+      <div class="command-bar">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice Input (V)">
+          <div class="voice-waveform">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <div class="command-input-wrapper">
+          <input 
+            type="text" 
+            class="command-input" 
+            id="commandInput" 
+            placeholder="Ask FaxWare anything... (Enter = send, V = voice, Ctrl+1-8 = switch panels)"
+            onkeydown="handleCommand(event)"
+          >
+          <button class="command-send" id="sendBtn" onclick="sendCommand()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="model-selector">
+          <label>Model:</label>
+          <select class="model-select" id="modelSelect">
+            <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+            <option value="openai/gpt-4o">GPT-4o</option>
+            <option value="anthropic/claude-3.5-sonnet">Claude 3.5</option>
+          </select>
+        </div>
+        <div class="tts-toggle">
+          <input type="checkbox" id="ttsToggle" checked>
+          <label for="ttsToggle">Speak</label>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Voice Toast -->
+  <div class="voice-toast" id="voiceToast">
+    <div class="voice-toast-icon" id="voiceToastIcon"></div>
+    <span id="voiceToastText">Listening...</span>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Command Palette -->
+  <div class="command-palette-overlay" id="commandPalette">
+    <div class="command-palette">
+      <div class="command-palette-input-wrapper">
+        <svg class="command-palette-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="command-palette-input" id="commandPaletteInput" placeholder="Type a command or search..." autocomplete="off">
+        <span class="command-palette-kbd">ESC</span>
+      </div>
+      <div class="command-palette-results" id="commandPaletteResults">
+        <div class="command-palette-section">
+          <div class="command-palette-section-title">Navigation</div>
+          <div class="command-palette-item" data-action="panel:dashboard">
+            <div class="command-palette-item-icon">🏠</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Go to Dashboard</div>
+              <div class="command-palette-item-desc">View your dashboard</div>
+            </div>
+            <div class="command-palette-item-shortcut">Ctrl+1</div>
+          </div>
+          <div class="command-palette-item" data-action="panel:chat">
+            <div class="command-palette-item-icon">💬</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Go to Chat</div>
+              <div class="command-palette-item-desc">Talk to FaxWare</div>
+            </div>
+            <div class="command-palette-item-shortcut">Ctrl+2</div>
+          </div>
+          <div class="command-palette-item" data-action="panel:terminal">
+            <div class="command-palette-item-icon">⌨️</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Go to Terminal</div>
+              <div class="command-palette-item-desc">Execute commands</div>
+            </div>
+            <div class="command-palette-item-shortcut">Ctrl+3</div>
+          </div>
+          <div class="command-palette-item" data-action="panel:watch">
+            <div class="command-palette-item-icon">👁️</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Go to Watch Mode</div>
+              <div class="command-palette-item-desc">See automation in action</div>
+            </div>
+            <div class="command-palette-item-shortcut">Ctrl+8</div>
+          </div>
+        </div>
+        <div class="command-palette-section">
+          <div class="command-palette-section-title">Actions</div>
+          <div class="command-palette-item" data-action="settings">
+            <div class="command-palette-item-icon">⚙️</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Open Settings</div>
+              <div class="command-palette-item-desc">Configure FaxWare</div>
+            </div>
+            <div class="command-palette-item-shortcut">Ctrl+,</div>
+          </div>
+          <div class="command-palette-item" data-action="screenshot">
+            <div class="command-palette-item-icon">📸</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Take Screenshot</div>
+              <div class="command-palette-item-desc">Capture your screen</div>
+            </div>
+          </div>
+          <div class="command-palette-item" data-action="clear-chat">
+            <div class="command-palette-item-icon">🗑️</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Clear Chat History</div>
+              <div class="command-palette-item-desc">Start fresh</div>
+            </div>
+          </div>
+          <div class="command-palette-item" data-action="check-update">
+            <div class="command-palette-item-icon">🔄</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Check for Updates</div>
+              <div class="command-palette-item-desc">See if new version is available</div>
+            </div>
+          </div>
+        </div>
+        <div class="command-palette-section">
+          <div class="command-palette-section-title">Quick Automations</div>
+          <div class="command-palette-item" data-action="auto:discord">
+            <div class="command-palette-item-icon">🎮</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Open Discord</div>
+              <div class="command-palette-item-desc">Launch Discord app</div>
+            </div>
+          </div>
+          <div class="command-palette-item" data-action="auto:browser">
+            <div class="command-palette-item-icon">🌐</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Open Browser</div>
+              <div class="command-palette-item-desc">Launch web browser</div>
+            </div>
+          </div>
+          <div class="command-palette-item" data-action="auto:spotify">
+            <div class="command-palette-item-icon">🎵</div>
+            <div class="command-palette-item-content">
+              <div class="command-palette-item-title">Open Spotify</div>
+              <div class="command-palette-item-desc">Launch Spotify</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-modal">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="settings-close" onclick="closeSettings()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-nav">
+          <div class="settings-nav-item active" data-section="general">
+            <span>⚙️</span> General
+          </div>
+          <div class="settings-nav-item" data-section="ai">
+            <span>🤖</span> AI & Models
+          </div>
+          <div class="settings-nav-item" data-section="appearance">
+            <span>🎨</span> Appearance
+          </div>
+          <div class="settings-nav-item" data-section="voice">
+            <span>🎤</span> Voice
+          </div>
+          <div class="settings-nav-item" data-section="automation">
+            <span>⚡</span> Automation
+          </div>
+          <div class="settings-nav-item" data-section="account">
+            <span>👤</span> Account
+          </div>
+        </div>
+        <div class="settings-content" id="settingsContent">
+          <!-- General Settings -->
+          <div class="settings-section" id="section-general">
+            <div class="settings-section-title">General</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Your Name</div>
+                <div class="settings-label-desc">How FaxWare addresses you</div>
+              </div>
+              <input type="text" class="settings-input" id="settingsName" placeholder="Enter your name">
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Sound Effects</div>
+                <div class="settings-label-desc">Play sounds on actions</div>
+              </div>
+              <div class="settings-toggle active" id="settingsSound" onclick="toggleSetting('sound')"></div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Auto-check for Updates</div>
+                <div class="settings-label-desc">Check GitHub for new versions</div>
+              </div>
+              <div class="settings-toggle active" id="settingsAutoUpdate" onclick="toggleSetting('autoUpdate')"></div>
+            </div>
+          </div>
+          
+          <!-- AI Settings -->
+          <div class="settings-section" id="section-ai" style="display: none;">
+            <div class="settings-section-title">AI & Models</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Default Model</div>
+                <div class="settings-label-desc">Primary AI model for responses</div>
+              </div>
+              <select class="settings-select" id="settingsModel">
+                <option value="openai/gpt-4o-mini">GPT-4o Mini (Fast)</option>
+                <option value="openai/gpt-4o">GPT-4o (Best)</option>
+                <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Max Iterations</div>
+                <div class="settings-label-desc">Maximum tool execution loops</div>
+              </div>
+              <input type="number" class="settings-input" id="settingsMaxIter" value="15" min="1" max="50" style="width: 80px;">
+            </div>
+          </div>
+
+          <!-- Appearance Settings -->
+          <div class="settings-section" id="section-appearance" style="display: none;">
+            <div class="settings-section-title">Appearance</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Particle Effects</div>
+                <div class="settings-label-desc">Animated background particles</div>
+              </div>
+              <div class="settings-toggle active" id="settingsParticles" onclick="toggleSetting('particles')"></div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Animations</div>
+                <div class="settings-label-desc">UI transition animations</div>
+              </div>
+              <div class="settings-toggle active" id="settingsAnimations" onclick="toggleSetting('animations')"></div>
+            </div>
+          </div>
+
+          <!-- Voice Settings -->
+          <div class="settings-section" id="section-voice" style="display: none;">
+            <div class="settings-section-title">Voice</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Text-to-Speech</div>
+                <div class="settings-label-desc">Read responses aloud</div>
+              </div>
+              <div class="settings-toggle" id="settingsTTS" onclick="toggleSetting('tts')"></div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Voice Input</div>
+                <div class="settings-label-desc">Use microphone for commands</div>
+              </div>
+              <div class="settings-toggle active" id="settingsVoiceInput" onclick="toggleSetting('voiceInput')"></div>
+            </div>
+          </div>
+
+          <!-- Automation Settings -->
+          <div class="settings-section" id="section-automation" style="display: none;">
+            <div class="settings-section-title">Automation</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Confirm Dangerous Actions</div>
+                <div class="settings-label-desc">Ask before destructive operations</div>
+              </div>
+              <div class="settings-toggle active" id="settingsConfirm" onclick="toggleSetting('confirm')"></div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Screenshot on Automation</div>
+                <div class="settings-label-desc">Auto-capture during PC control</div>
+              </div>
+              <div class="settings-toggle" id="settingsAutoScreenshot" onclick="toggleSetting('autoScreenshot')"></div>
+            </div>
+          </div>
+
+          <!-- Account Settings -->
+          <div class="settings-section" id="section-account" style="display: none;">
+            <div class="settings-section-title">Account</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">OpenRouter API Key</div>
+                <div class="settings-label-desc">Set via environment variable</div>
+              </div>
+              <span id="settingsApiStatus" style="color: var(--success);">✓ Configured</span>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">FaxWare Version</div>
+                <div class="settings-label-desc">Current installed version</div>
+              </div>
+              <span id="settingsVersion">v1.0.0</span>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">GitHub Repository</div>
+                <div class="settings-label-desc">Source and updates</div>
+              </div>
+              <a href="https://github.com/clout2buy/FaxWareOS" target="_blank" style="color: var(--accent-primary);">clout2buy/FaxWareOS</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Wizard -->
+  <div class="onboarding-overlay" id="onboardingOverlay">
+    <div class="onboarding-wizard">
+      <div class="onboarding-logo">
+        <img src="/assets/logo.png" alt="FaxWare">
+      </div>
+      <h1 class="onboarding-title">Welcome to FaxWare OS</h1>
+      <p class="onboarding-subtitle">Your personal AI assistant with full system control</p>
+      
+      <div class="onboarding-steps">
+        <div class="onboarding-step-dot active" data-step="1"></div>
+        <div class="onboarding-step-dot" data-step="2"></div>
+        <div class="onboarding-step-dot" data-step="3"></div>
+      </div>
+      
+      <div class="onboarding-content" id="onboardingContent">
+        <!-- Step 1: Name -->
+        <div class="onboarding-step" id="onboardingStep1">
+          <div class="onboarding-input-group">
+            <label class="onboarding-input-label">What should I call you?</label>
+            <input type="text" class="onboarding-input" id="onboardingName" placeholder="Enter your name">
+          </div>
+        </div>
+      </div>
+      
+      <div class="onboarding-actions">
+        <button class="onboarding-btn onboarding-btn-secondary" id="onboardingSkip" onclick="skipOnboarding()">Skip</button>
+        <button class="onboarding-btn onboarding-btn-primary" id="onboardingNext" onclick="nextOnboardingStep()">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Banner -->
+  <div class="update-banner" id="updateBanner">
+    <div class="update-banner-icon">🚀</div>
+    <div class="update-banner-content">
+      <h4>Update Available!</h4>
+      <p id="updateVersion">FaxWare v1.1.0 is ready</p>
+    </div>
+    <div class="update-banner-actions">
+      <button class="update-btn update-btn-secondary" onclick="dismissUpdate()">Later</button>
+      <button class="update-btn update-btn-primary" onclick="installUpdate()">Update Now</button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // FAXWARE OS - APPLICATION LOGIC
+    // ==========================================
+
+    // State
+    const state = {
+      currentPanel: 'dashboard',
+      isLoading: false,
+      modelsLoaded: false,
+      filesLoaded: false,
+      allModels: [],
+      stats: {
+        tokens: 0,
+        cost: 0,
+        uptime: 0,
+        memory: 0,
+        toolsUsed: 0
+      },
+      activities: []
+    };
+
+    // DOM Elements
+    const elements = {
+      panels: document.getElementById('panels'),
+      chatMessages: document.getElementById('chatMessages'),
+      commandInput: document.getElementById('commandInput'),
+      sendBtn: document.getElementById('sendBtn'),
+      modelSelect: document.getElementById('modelSelect'),
+      orb: document.getElementById('orb'),
+      tokenCount: document.getElementById('tokenCount'),
+      costDisplay: document.getElementById('costDisplay'),
+      statusDot: document.getElementById('statusDot'),
+      statusText: document.getElementById('statusText'),
+      panelTitle: document.getElementById('panelTitle'),
+      panelSubtitle: document.getElementById('panelSubtitle'),
+      greeting: document.getElementById('greeting'),
+      uptimeDisplay: document.getElementById('uptimeDisplay'),
+      memoryDisplay: document.getElementById('memoryDisplay'),
+      toolsDisplay: document.getElementById('toolsDisplay'),
+      modelDisplay: document.getElementById('modelDisplay'),
+      activityList: document.getElementById('activityList'),
+      terminalOutput: document.getElementById('terminalOutput'),
+      terminalInput: document.getElementById('terminalInput'),
+      previewFileName: document.getElementById('previewFileName'),
+      previewContent: document.getElementById('previewContent'),
+      projectsGrid: document.getElementById('projectsGrid'),
+      voiceBtn: document.getElementById('voiceBtn'),
+      ttsToggle: document.getElementById('ttsToggle')
+    };
+
+    // Panel titles
+    const panelInfo = {
+      dashboard: { title: 'Dashboard', subtitle: 'Welcome back' },
+      chat: { title: 'Chat', subtitle: 'Talk to FaxWare' },
+      terminal: { title: 'Terminal', subtitle: 'Execute commands' },
+      files: { title: 'Files', subtitle: 'Browse and edit' },
+      projects: { title: 'Projects', subtitle: 'Your workspaces' },
+      models: { title: 'AI Models', subtitle: 'OpenRouter Integration' },
+      knowledge: { title: 'Knowledge', subtitle: 'Learned procedures' },
+      watch: { title: 'Watch Mode', subtitle: 'See FaxWare in action' }
+    };
+
+    // Mood emoji mapping
+    const moodEmojis = {
+      neutral: '😐',
+      happy: '😊',
+      excited: '🤩',
+      satisfied: '😌',
+      focused: '🧐',
+      tired: '😴',
+      concerned: '😟'
+    };
+
+    // ==========================================
+    // PANEL NAVIGATION
+    // ==========================================
+
+    function switchPanel(panelName) {
+      const panels = ['dashboard', 'chat', 'terminal', 'files', 'projects', 'models', 'knowledge', 'watch'];
+      const panelIndex = panels.indexOf(panelName);
+      if (panelIndex === -1) return;
+      
+      // Load data for specific panels
+      if (panelName === 'models' && !state.modelsLoaded) {
+        loadModels();
+      }
+      if (panelName === 'files' && !state.filesLoaded) {
+        loadFiles();
+      }
+      if (panelName === 'knowledge') {
+        loadKnowledge();
+      }
+      if (panelName === 'watch') {
+        loadWatchMode();
+        loadRecipes();
+        loadScreenshots();
+      }
+
+      state.currentPanel = panelName;
+      
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.panel === panelName);
+      });
+
+      // Slide panels
+      elements.panels.style.transform = `translateX(-${panelIndex * 100}%)`;
+      sounds.play('whoosh');
+
+      // Update header
+      const info = panelInfo[panelName];
+      elements.panelTitle.textContent = info.title;
+      elements.panelSubtitle.textContent = info.subtitle;
+
+      // Focus input if chat
+      if (panelName === 'chat') {
+        setTimeout(() => elements.commandInput.focus(), 300);
+      }
+    }
+
+    // ==========================================
+    // CHAT FUNCTIONALITY
+    // ==========================================
+
+    function addMessage(content, type, toolsUsed = null) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${type}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = content;
+      msgDiv.appendChild(bubble);
+
+      // Tool cards
+      if (toolsUsed && toolsUsed.length > 0) {
+        const toolsCard = document.createElement('div');
+        toolsCard.className = 'tools-card';
+        
+        toolsCard.innerHTML = `
+          <div class="tools-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+            ${toolsUsed.length} Tool${toolsUsed.length > 1 ? 's' : ''} Executed
+          </div>
+        `;
+
+        toolsUsed.forEach(t => {
+          const item = document.createElement('div');
+          item.className = 'tool-item';
+          item.innerHTML = `
+            <div class="tool-name ${t.success === false ? 'error' : ''}">${t.tool}</div>
+            ${t.args ? `<div class="tool-args">${escapeHtml(JSON.stringify(t.args))}</div>` : ''}
+            ${t.result ? `<div class="tool-result">${escapeHtml(t.result)}</div>` : ''}
+          `;
+          toolsCard.appendChild(item);
+        });
+
+        msgDiv.appendChild(toolsCard);
+        state.stats.toolsUsed += toolsUsed.length;
+        elements.toolsDisplay.textContent = state.stats.toolsUsed;
+      }
+
+      elements.chatMessages.appendChild(msgDiv);
+      elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+
+      // Add to activity
+      addActivity(type === 'user' ? 'Message sent' : 'Response received', type === 'user' ? '💬' : '🤖');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ==========================================
+    // COMMAND HANDLING
+    // ==========================================
+
+    function handleCommand(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendCommand();
+      }
+    }
+
+    async function sendCommand() {
+      const message = elements.commandInput.value.trim();
+      if (!message || state.isLoading) return;
+
+      state.isLoading = true;
+      elements.commandInput.value = '';
+      elements.sendBtn.innerHTML = '<div class="spinner"></div>';
+      elements.sendBtn.disabled = true;
+      elements.orb.classList.add('thinking');
+
+      // Switch to chat panel
+      if (state.currentPanel !== 'chat') {
+        switchPanel('chat');
+      }
+
+      addMessage(message, 'user');
+      sounds.play('send');
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            model: elements.modelSelect.value
+          })
+        });
+
+        const data = await response.json();
+        
+        elements.orb.classList.remove('thinking');
+        elements.orb.classList.add('working');
+        setTimeout(() => elements.orb.classList.remove('working'), 500);
+
+        addMessage(data.reply || '(no response)', 'assistant', data.toolsUsed);
+        sounds.play('receive');
+        
+        // Speak the response if TTS is enabled
+        if (data.reply) {
+          // Clean up the response for speech (remove code blocks, special chars)
+          const cleanText = data.reply
+            .replace(/```[\s\S]*?```/g, 'code block omitted')
+            .replace(/`[^`]+`/g, '')
+            .replace(/[#*_~]/g, '')
+            .slice(0, 500); // Limit length
+          voice.speak(cleanText);
+        }
+
+        // Update stats
+        if (data.usage) {
+          state.stats.tokens = data.usage.totalTokens;
+          state.stats.cost = data.usage.totalCost;
+          updateStats();
+        }
+
+      } catch (err) {
+        addMessage(`Error: ${err.message}`, 'system');
+      }
+
+      state.isLoading = false;
+      elements.sendBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      `;
+      elements.sendBtn.disabled = false;
+      elements.commandInput.focus();
+    }
+
+    function quickAction(prompt) {
+      elements.commandInput.value = prompt;
+      sendCommand();
+    }
+
+    // ==========================================
+    // TERMINAL
+    // ==========================================
+
+    async function handleTerminalInput(event) {
+      if (event.key !== 'Enter') return;
+      
+      const cmd = elements.terminalInput.value.trim();
+      if (!cmd) return;
+
+      elements.terminalInput.value = '';
+
+      // Add command to output
+      addTerminalLine(`PS> ${cmd}`, 'command');
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `run ${cmd}` })
+        });
+
+        const data = await response.json();
+        addTerminalLine(data.reply, 'output');
+
+      } catch (err) {
+        addTerminalLine(`Error: ${err.message}`, 'output');
+      }
+    }
+
+    function addTerminalLine(text, type) {
+      const line = document.createElement('div');
+      line.className = 'terminal-line';
+      
+      if (type === 'command') {
+        line.innerHTML = `<span class="terminal-prompt">PS&gt;</span> <span class="terminal-command">${escapeHtml(text.replace('PS> ', ''))}</span>`;
+      } else {
+        line.innerHTML = `<span class="terminal-output-text">${escapeHtml(text)}</span>`;
+      }
+      
+      elements.terminalOutput.appendChild(line);
+      elements.terminalOutput.scrollTop = elements.terminalOutput.scrollHeight;
+    }
+
+    // ==========================================
+    // FILES
+    // ==========================================
+
+    async function loadFile(filename) {
+      elements.previewFileName.textContent = filename;
+      elements.previewContent.textContent = 'Loading...';
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `cat ${filename}` })
+        });
+
+        const data = await response.json();
+        elements.previewContent.textContent = data.reply || '(empty)';
+
+      } catch (err) {
+        elements.previewContent.textContent = `Error: ${err.message}`;
+      }
+    }
+
+    function refreshFiles() {
+      addActivity('Files refreshed', '📁');
+    }
+
+    // ==========================================
+    // PROJECTS
+    // ==========================================
+
+    function createProject() {
+      const name = prompt('Project name:');
+      if (!name) return;
+
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.innerHTML = `
+        <div class="project-icon">📦</div>
+        <div class="project-name">${escapeHtml(name)}</div>
+        <div class="project-desc">Created just now</div>
+        <div class="project-meta">
+          <span>0 files</span>
+          <span>New</span>
+        </div>
+      `;
+      card.onclick = () => {
+        switchPanel('chat');
+        elements.commandInput.value = `Create a new project called "${name}" with basic structure`;
+        sendCommand();
+      };
+
+      elements.projectsGrid.insertBefore(card, elements.projectsGrid.firstChild);
+      addActivity(`Project "${name}" created`, '📦');
+    }
+
+    // ==========================================
+    // ACTIVITY
+    // ==========================================
+
+    function addActivity(title, icon) {
+      const item = document.createElement('div');
+      item.className = 'activity-item';
+      item.innerHTML = `
+        <div class="activity-icon">${icon}</div>
+        <div class="activity-content">
+          <div class="activity-title">${escapeHtml(title)}</div>
+          <div class="activity-time">Just now</div>
+        </div>
+      `;
+      
+      elements.activityList.insertBefore(item, elements.activityList.firstChild);
+      
+      // Keep only last 20
+      while (elements.activityList.children.length > 20) {
+        elements.activityList.removeChild(elements.activityList.lastChild);
+      }
+    }
+
+    // ==========================================
+    // STATUS & STATS
+    // ==========================================
+
+    async function fetchStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+
+        elements.statusDot.classList.toggle('offline', !data.keySet);
+        elements.statusText.textContent = data.keySet ? 'Online' : 'No API Key';
+
+        state.stats.tokens = data.tokens || 0;
+        state.stats.cost = data.cost || 0;
+        state.stats.uptime = data.uptime || 0;
+        state.stats.memory = data.memory || 0;
+
+        if (data.model) {
+          elements.modelDisplay.textContent = data.model.split('/').pop();
+        }
+
+        updateStats();
+
+      } catch (err) {
+        elements.statusDot.classList.add('offline');
+        elements.statusText.textContent = 'Offline';
+      }
+    }
+
+    function updateStats() {
+      elements.tokenCount.textContent = state.stats.tokens.toLocaleString();
+      elements.costDisplay.textContent = '$' + state.stats.cost.toFixed(4);
+      elements.uptimeDisplay.textContent = state.stats.uptime + 's';
+      elements.memoryDisplay.textContent = state.stats.memory;
+    }
+
+    async function updateGreeting() {
+      const hour = new Date().getHours();
+      let greeting = 'Good evening';
+      if (hour < 12) greeting = 'Good morning';
+      else if (hour < 18) greeting = 'Good afternoon';
+      
+      // Try to get user's name from status
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        if (data.userName) {
+          greeting += `, ${data.userName}`;
+        }
+      } catch (e) {}
+      
+      elements.greeting.textContent = greeting;
+    }
+
+    // ==========================================
+    // PARTICLES
+    // ==========================================
+
+    function initParticles() {
+      const canvas = document.getElementById('particles');
+      const ctx = canvas.getContext('2d');
+      
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const particles = [];
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 2 + 0.5,
+          opacity: Math.random() * 0.3 + 0.1
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(99, 102, 241, ${p.opacity})`;
+          ctx.fill();
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+
+    // ==========================================
+    // ENTERPRISE: TOAST NOTIFICATIONS
+    // ==========================================
+
+    const toast = {
+      container: null,
+      
+      init() {
+        this.container = document.getElementById('toastContainer');
+      },
+      
+      show(title, message, type = 'info', duration = 5000) {
+        const toastEl = document.createElement('div');
+        toastEl.className = `toast ${type}`;
+        
+        const icons = {
+          success: '✓',
+          error: '✕',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+        
+        toastEl.innerHTML = `
+          <div class="toast-icon">${icons[type]}</div>
+          <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+          </div>
+          <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+          <div class="toast-progress" style="animation-duration: ${duration}ms;"></div>
+        `;
+        
+        this.container.appendChild(toastEl);
+        
+        setTimeout(() => {
+          toastEl.classList.add('leaving');
+          setTimeout(() => toastEl.remove(), 300);
+        }, duration);
+        
+        return toastEl;
+      },
+      
+      success(title, message) { return this.show(title, message, 'success'); },
+      error(title, message) { return this.show(title, message, 'error'); },
+      warning(title, message) { return this.show(title, message, 'warning'); },
+      info(title, message) { return this.show(title, message, 'info'); }
+    };
+
+    // ==========================================
+    // ENTERPRISE: COMMAND PALETTE
+    // ==========================================
+
+    const commandPalette = {
+      overlay: null,
+      input: null,
+      results: null,
+      selectedIndex: 0,
+      items: [],
+      
+      init() {
+        this.overlay = document.getElementById('commandPalette');
+        this.input = document.getElementById('commandPaletteInput');
+        this.results = document.getElementById('commandPaletteResults');
+        this.items = this.results.querySelectorAll('.command-palette-item');
+        
+        // Input handler
+        this.input.addEventListener('input', () => this.filter());
+        
+        // Keyboard navigation
+        this.input.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.selectNext();
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.selectPrev();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            this.executeSelected();
+          }
+        });
+        
+        // Click handler for items
+        this.items.forEach((item, index) => {
+          item.addEventListener('click', () => {
+            this.selectedIndex = index;
+            this.executeSelected();
+          });
+        });
+        
+        // Close on overlay click
+        this.overlay.addEventListener('click', (e) => {
+          if (e.target === this.overlay) this.close();
+        });
+      },
+      
+      open() {
+        this.overlay.classList.add('active');
+        this.input.value = '';
+        this.input.focus();
+        this.selectedIndex = 0;
+        this.updateSelection();
+        sounds.play('click');
+      },
+      
+      close() {
+        this.overlay.classList.remove('active');
+        this.input.value = '';
+      },
+      
+      filter() {
+        const query = this.input.value.toLowerCase();
+        this.items.forEach(item => {
+          const title = item.querySelector('.command-palette-item-title').textContent.toLowerCase();
+          const desc = item.querySelector('.command-palette-item-desc').textContent.toLowerCase();
+          const matches = title.includes(query) || desc.includes(query);
+          item.style.display = matches ? 'flex' : 'none';
+        });
+      },
+      
+      selectNext() {
+        const visible = Array.from(this.items).filter(i => i.style.display !== 'none');
+        const currentVisible = visible.indexOf(this.items[this.selectedIndex]);
+        if (currentVisible < visible.length - 1) {
+          this.selectedIndex = Array.from(this.items).indexOf(visible[currentVisible + 1]);
+          this.updateSelection();
+        }
+      },
+      
+      selectPrev() {
+        const visible = Array.from(this.items).filter(i => i.style.display !== 'none');
+        const currentVisible = visible.indexOf(this.items[this.selectedIndex]);
+        if (currentVisible > 0) {
+          this.selectedIndex = Array.from(this.items).indexOf(visible[currentVisible - 1]);
+          this.updateSelection();
+        }
+      },
+      
+      updateSelection() {
+        this.items.forEach((item, index) => {
+          item.classList.toggle('selected', index === this.selectedIndex);
+        });
+        if (this.items[this.selectedIndex]) {
+          this.items[this.selectedIndex].scrollIntoView({ block: 'nearest' });
+        }
+      },
+      
+      executeSelected() {
+        const item = this.items[this.selectedIndex];
+        if (!item || item.style.display === 'none') return;
+        
+        const action = item.dataset.action;
+        this.close();
+        sounds.play('click');
+        
+        // Execute action
+        if (action.startsWith('panel:')) {
+          switchPanel(action.replace('panel:', ''));
+        } else if (action === 'settings') {
+          openSettings();
+        } else if (action === 'screenshot') {
+          runQuickAutomation('screenshot');
+          toast.info('Screenshot', 'Taking screenshot...');
+        } else if (action === 'clear-chat') {
+          clearChat();
+          toast.success('Cleared', 'Chat history cleared');
+        } else if (action === 'check-update') {
+          checkForUpdates();
+        } else if (action.startsWith('auto:')) {
+          runQuickAutomation(action.replace('auto:', ''));
+        }
+      }
+    };
+
+    // ==========================================
+    // ENTERPRISE: SETTINGS SYSTEM
+    // ==========================================
+
+    const settings = {
+      data: {
+        sound: true,
+        autoUpdate: true,
+        particles: true,
+        animations: true,
+        tts: false,
+        voiceInput: true,
+        confirm: true,
+        autoScreenshot: false
+      },
+      
+      load() {
+        const saved = localStorage.getItem('faxware_settings');
+        if (saved) {
+          this.data = { ...this.data, ...JSON.parse(saved) };
+        }
+        this.updateUI();
+      },
+      
+      save() {
+        localStorage.setItem('faxware_settings', JSON.stringify(this.data));
+      },
+      
+      updateUI() {
+        Object.keys(this.data).forEach(key => {
+          const toggle = document.getElementById('settings' + key.charAt(0).toUpperCase() + key.slice(1));
+          if (toggle) {
+            toggle.classList.toggle('active', this.data[key]);
+          }
+        });
+      },
+      
+      toggle(key) {
+        this.data[key] = !this.data[key];
+        this.save();
+        this.updateUI();
+        
+        // Apply setting immediately
+        if (key === 'particles') {
+          const canvas = document.getElementById('particles');
+          canvas.style.display = this.data.particles ? 'block' : 'none';
+        }
+        if (key === 'sound') {
+          sounds.enabled = this.data.sound;
+        }
+      }
+    };
+
+    function openSettings() {
+      document.getElementById('settingsOverlay').classList.add('active');
+      sounds.play('click');
+      
+      // Load current values
+      fetchStatus().then(() => {
+        const nameInput = document.getElementById('settingsName');
+        if (nameInput && state.userName) {
+          nameInput.value = state.userName;
+        }
+      });
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsOverlay').classList.remove('active');
+      
+      // Save name if changed
+      const nameInput = document.getElementById('settingsName');
+      if (nameInput && nameInput.value.trim()) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: nameInput.value.trim(), preferredName: nameInput.value.trim() })
+        }).then(() => {
+          updateGreeting();
+          loadConsciousness();
+        });
+      }
+    }
+
+    function toggleSetting(key) {
+      settings.toggle(key);
+      toast.info('Setting Updated', `${key} is now ${settings.data[key] ? 'enabled' : 'disabled'}`);
+    }
+
+    // Settings navigation
+    document.querySelectorAll('.settings-nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+        
+        // Update nav
+        document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        
+        // Show section
+        document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
+        document.getElementById('section-' + section).style.display = 'block';
+      });
+    });
+
+    // ==========================================
+    // ENTERPRISE: ONBOARDING WIZARD
+    // ==========================================
+
+    const onboarding = {
+      currentStep: 1,
+      totalSteps: 3,
+      
+      init() {
+        // Check if user has completed onboarding
+        const completed = localStorage.getItem('faxware_onboarding_complete');
+        if (!completed) {
+          // Check if user already has a name
+          fetch('/api/status').then(res => res.json()).then(data => {
+            if (!data.userName && data.totalInteractions < 2) {
+              this.show();
+            }
+          });
+        }
+      },
+      
+      show() {
+        document.getElementById('onboardingOverlay').classList.add('active');
+      },
+      
+      hide() {
+        document.getElementById('onboardingOverlay').classList.remove('active');
+        localStorage.setItem('faxware_onboarding_complete', 'true');
+      },
+      
+      next() {
+        if (this.currentStep === 1) {
+          // Save name
+          const name = document.getElementById('onboardingName').value.trim();
+          if (name) {
+            fetch('/api/user', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, preferredName: name })
+            });
+          }
+        }
+        
+        if (this.currentStep < this.totalSteps) {
+          this.currentStep++;
+          this.updateUI();
+        } else {
+          this.complete();
+        }
+      },
+      
+      skip() {
+        this.complete();
+      },
+      
+      complete() {
+        this.hide();
+        toast.success('Welcome!', 'FaxWare is ready. Press Ctrl+K for quick commands.');
+        updateGreeting();
+        loadConsciousness();
+      },
+      
+      updateUI() {
+        // Update dots
+        document.querySelectorAll('.onboarding-step-dot').forEach((dot, index) => {
+          dot.classList.remove('active', 'completed');
+          if (index + 1 === this.currentStep) dot.classList.add('active');
+          if (index + 1 < this.currentStep) dot.classList.add('completed');
+        });
+        
+        // Update content based on step
+        const content = document.getElementById('onboardingContent');
+        if (this.currentStep === 2) {
+          content.innerHTML = `
+            <div style="text-align: center;">
+              <h3 style="margin-bottom: 16px;">Quick Commands</h3>
+              <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Press <kbd style="background: var(--bg-elevated); padding: 4px 8px; border-radius: 4px;">Ctrl+K</kbd> anytime to open the command palette
+              </p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left;">
+                <div style="background: var(--bg-elevated); padding: 12px; border-radius: 8px;">
+                  <strong>Ctrl+1-8</strong><br><span style="color: var(--text-muted); font-size: 13px;">Switch panels</span>
+                </div>
+                <div style="background: var(--bg-elevated); padding: 12px; border-radius: 8px;">
+                  <strong>V</strong><br><span style="color: var(--text-muted); font-size: 13px;">Voice input</span>
+                </div>
+                <div style="background: var(--bg-elevated); padding: 12px; border-radius: 8px;">
+                  <strong>Ctrl+,</strong><br><span style="color: var(--text-muted); font-size: 13px;">Settings</span>
+                </div>
+                <div style="background: var(--bg-elevated); padding: 12px; border-radius: 8px;">
+                  <strong>ESC</strong><br><span style="color: var(--text-muted); font-size: 13px;">Close dialogs</span>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (this.currentStep === 3) {
+          content.innerHTML = `
+            <div style="text-align: center;">
+              <h3 style="margin-bottom: 16px;">You're All Set!</h3>
+              <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                FaxWare can control your PC, browse the web, run commands, and more.
+              </p>
+              <div style="font-size: 48px; margin: 20px 0;">🚀</div>
+              <p style="color: var(--text-muted);">
+                Just tell me what you want to do in natural language.
+              </p>
+            </div>
+          `;
+          document.getElementById('onboardingNext').textContent = 'Get Started';
+        }
+      }
+    };
+
+    function nextOnboardingStep() { onboarding.next(); }
+    function skipOnboarding() { onboarding.skip(); }
+
+    // ==========================================
+    // ENTERPRISE: AUTO-UPDATE SYSTEM
+    // ==========================================
+
+    const updater = {
+      currentVersion: '1.0.0',
+      latestVersion: null,
+      downloadUrl: null,
+      
+      async check() {
+        try {
+          const res = await fetch('https://api.github.com/repos/clout2buy/FaxWareOS/releases/latest');
+          if (!res.ok) return null;
+          
+          const data = await res.json();
+          this.latestVersion = data.tag_name.replace('v', '');
+          
+          // Compare versions
+          if (this.isNewer(this.latestVersion, this.currentVersion)) {
+            this.downloadUrl = data.assets.find(a => a.name.includes('.exe'))?.browser_download_url || data.html_url;
+            return {
+              version: this.latestVersion,
+              notes: data.body,
+              url: this.downloadUrl
+            };
+          }
+          
+          return null;
+        } catch (err) {
+          console.error('Update check failed:', err);
+          return null;
+        }
+      },
+      
+      isNewer(latest, current) {
+        const l = latest.split('.').map(Number);
+        const c = current.split('.').map(Number);
+        
+        for (let i = 0; i < 3; i++) {
+          if ((l[i] || 0) > (c[i] || 0)) return true;
+          if ((l[i] || 0) < (c[i] || 0)) return false;
+        }
+        return false;
+      },
+      
+      showBanner(version) {
+        document.getElementById('updateVersion').textContent = `FaxWare v${version} is available`;
+        document.getElementById('updateBanner').classList.add('active');
+      },
+      
+      hideBanner() {
+        document.getElementById('updateBanner').classList.remove('active');
+      },
+      
+      async install() {
+        if (this.downloadUrl) {
+          toast.info('Downloading Update', 'Opening download page...');
+          window.open(this.downloadUrl, '_blank');
+        }
+      }
+    };
+
+    async function checkForUpdates() {
+      toast.info('Checking...', 'Looking for updates');
+      const update = await updater.check();
+      
+      if (update) {
+        updater.showBanner(update.version);
+        toast.success('Update Available', `Version ${update.version} is ready`);
+      } else {
+        toast.info('Up to Date', 'You have the latest version');
+      }
+    }
+
+    function dismissUpdate() { updater.hideBanner(); }
+    function installUpdate() { updater.install(); }
+
+    // ==========================================
+    // ENTERPRISE: ENHANCED KEYBOARD SHORTCUTS
+    // ==========================================
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        // Command Palette: Ctrl+K
+        if (e.ctrlKey && e.key === 'k') {
+          e.preventDefault();
+          commandPalette.open();
+          return;
+        }
+        
+        // Settings: Ctrl+,
+        if (e.ctrlKey && e.key === ',') {
+          e.preventDefault();
+          openSettings();
+          return;
+        }
+        
+        // Escape to close modals
+        if (e.key === 'Escape') {
+          commandPalette.close();
+          closeSettings();
+          document.getElementById('onboardingOverlay').classList.remove('active');
+          return;
+        }
+        
+        // Quick actions when not in input
+        const inInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+        if (!inInput) {
+          // ? for help
+          if (e.key === '?') {
+            commandPalette.open();
+            return;
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // ENTERPRISE: CLEAR CHAT
+    // ==========================================
+
+    function clearChat() {
+      elements.chatMessages.innerHTML = `
+        <div class="message system">
+          <div class="message-bubble">
+            <strong>FaxWare OS v1.0.0</strong><br>
+            <span style="color: var(--text-secondary)">I'm your personal AI with full system access. Ask me anything or tell me what to do!</span>
+          </div>
+        </div>
+      `;
+      
+      // Clear on server
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'clear' })
+      });
+    }
+
+    // ==========================================
+    // MODELS SYSTEM
+    // ==========================================
+
+    async function loadModels() {
+      const grid = document.getElementById('modelsGrid');
+      const creditsEl = document.getElementById('creditsValue');
+      
+      try {
+        // Load credits
+        const creditsRes = await fetch('/api/openrouter/credits');
+        const creditsData = await creditsRes.json();
+        if (creditsData.remaining !== undefined) {
+          creditsEl.textContent = '$' + creditsData.remaining.toFixed(2);
+        } else if (creditsData.error) {
+          creditsEl.textContent = 'N/A';
+        }
+        
+        // Load models
+        const modelsRes = await fetch('/api/openrouter/models');
+        const modelsData = await modelsRes.json();
+        
+        if (modelsData.models && modelsData.models.length > 0) {
+          state.allModels = modelsData.models;
+          state.modelsLoaded = true;
+          renderModels(modelsData.models);
+        } else {
+          grid.innerHTML = '<div class="model-card loading">No models found or API error</div>';
+        }
+      } catch (err) {
+        grid.innerHTML = `<div class="model-card loading">Error: ${err.message}</div>`;
+      }
+    }
+
+    function renderModels(models) {
+      const grid = document.getElementById('modelsGrid');
+      const currentModel = elements.modelSelect.value;
+      
+      grid.innerHTML = models.slice(0, 50).map(m => `
+        <div class="model-card ${m.id === currentModel ? 'active' : ''}" onclick="selectModel('${m.id}')">
+          <div class="model-card-header">
+            <div>
+              <div class="model-provider">${m.provider}</div>
+              <div class="model-name">${m.name}</div>
+            </div>
+            <div class="model-badges">
+              ${m.capabilities?.vision ? '<span class="model-badge vision">Vision</span>' : ''}
+              ${m.capabilities?.tools ? '<span class="model-badge tools">Tools</span>' : ''}
+            </div>
+          </div>
+          <div class="model-desc">${m.description || 'No description available'}</div>
+          <div class="model-meta">
+            <span>Context: ${m.context ? (m.context / 1000).toFixed(0) + 'k' : 'N/A'}</span>
+            <span class="model-price">$${m.pricing?.prompt ? (parseFloat(m.pricing.prompt) * 1000000).toFixed(2) : '?'}/M</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterModels() {
+      const search = document.getElementById('modelsSearch').value.toLowerCase();
+      const provider = document.getElementById('providerFilter').value.toLowerCase();
+      
+      let filtered = state.allModels;
+      
+      if (search) {
+        filtered = filtered.filter(m => 
+          m.name.toLowerCase().includes(search) || 
+          m.id.toLowerCase().includes(search) ||
+          (m.description && m.description.toLowerCase().includes(search))
+        );
+      }
+      
+      if (provider) {
+        filtered = filtered.filter(m => m.provider.toLowerCase() === provider);
+      }
+      
+      renderModels(filtered);
+    }
+
+    function selectModel(modelId) {
+      elements.modelSelect.value = modelId;
+      
+      // Update active state
+      document.querySelectorAll('.model-card').forEach(card => {
+        card.classList.remove('active');
+        if (card.onclick.toString().includes(modelId)) {
+          card.classList.add('active');
+        }
+      });
+      
+      // Add to model select if not exists
+      const option = Array.from(elements.modelSelect.options).find(o => o.value === modelId);
+      if (!option) {
+        const newOption = document.createElement('option');
+        newOption.value = modelId;
+        newOption.textContent = modelId.split('/').pop();
+        elements.modelSelect.appendChild(newOption);
+        elements.modelSelect.value = modelId;
+      }
+      
+      addActivity(`Switched to ${modelId.split('/').pop()}`, '🤖');
+      sounds.play('click');
+    }
+
+    // ==========================================
+    // FILES SYSTEM
+    // ==========================================
+
+    async function loadFiles() {
+      const tree = document.getElementById('fileTree');
+      
+      try {
+        const res = await fetch('/api/files');
+        const data = await res.json();
+        
+        if (data.files && data.files.length > 0) {
+          state.filesLoaded = true;
+          tree.innerHTML = renderFileTree(data.files);
+        } else {
+          tree.innerHTML = '<div style="color: var(--text-muted); padding: 12px;">No files found</div>';
+        }
+      } catch (err) {
+        tree.innerHTML = `<div style="color: var(--error); padding: 12px;">Error: ${err.message}</div>`;
+      }
+    }
+
+    function renderFileTree(files, indent = 0) {
+      return files.map(f => {
+        const icon = f.type === 'folder' ? '📁' : getFileIcon(f.name);
+        const padding = indent * 16;
+        
+        if (f.type === 'folder' && f.children) {
+          return `
+            <div class="tree-folder">
+              <div class="tree-item" style="padding-left: ${padding + 12}px" onclick="toggleFolder(this)">
+                <span class="tree-item-icon">${icon}</span>
+                <span>${f.name}</span>
+              </div>
+              <div class="tree-folder-content">
+                ${renderFileTree(f.children, indent + 1)}
+              </div>
+            </div>
+          `;
+        }
+        
+        return `
+          <div class="tree-item" style="padding-left: ${padding + 12}px" onclick="loadFileContent('${f.path.replace(/\\/g, '\\\\')}')">
+            <span class="tree-item-icon">${icon}</span>
+            <span>${f.name}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      const icons = {
+        js: '📜', json: '📋', html: '🌐', css: '🎨', md: '📝',
+        py: '🐍', ts: '📘', txt: '📄', png: '🖼️', jpg: '🖼️',
+        exe: '⚙️', ps1: '💠', cmd: '💠'
+      };
+      return icons[ext] || '📄';
+    }
+
+    function toggleFolder(el) {
+      const content = el.nextElementSibling;
+      if (content) {
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    async function loadFileContent(filePath) {
+      const nameEl = document.getElementById('previewFileName');
+      const contentEl = document.getElementById('previewContent');
+      
+      nameEl.textContent = filePath.split('\\').pop();
+      contentEl.textContent = 'Loading...';
+      
+      try {
+        const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
+        const data = await res.json();
+        
+        if (data.content !== undefined) {
+          contentEl.textContent = data.content;
+        } else if (data.error) {
+          contentEl.textContent = `Error: ${data.error}`;
+        }
+      } catch (err) {
+        contentEl.textContent = `Error: ${err.message}`;
+      }
+    }
+
+    function refreshFiles() {
+      state.filesLoaded = false;
+      loadFiles();
+      addActivity('Files refreshed', '📁');
+    }
+
+    // ==========================================
+    // KNOWLEDGE SYSTEM
+    // ==========================================
+
+    async function loadKnowledge() {
+      const grid = document.getElementById('knowledgeGrid');
+      
+      try {
+        const res = await fetch('/api/knowledge');
+        const data = await res.json();
+        
+        if (data.entries && data.entries.length > 0) {
+          grid.innerHTML = data.entries.map(e => `
+            <div class="knowledge-card" onclick="viewKnowledge('${e.id}')">
+              <div class="knowledge-title">${escapeHtml(e.title)}</div>
+              <div class="knowledge-content">${escapeHtml(e.content)}</div>
+              ${e.tags && e.tags.length ? `
+                <div class="knowledge-tags">
+                  ${e.tags.map(t => `<span class="knowledge-tag">${escapeHtml(t)}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+        } else {
+          grid.innerHTML = `
+            <div class="knowledge-empty">
+              <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+              <h3>No entries yet</h3>
+              <p style="color: var(--text-muted); margin-top: 8px;">FaxWare will learn and store procedures here</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        grid.innerHTML = `<div style="color: var(--error); padding: 20px;">Error: ${err.message}</div>`;
+      }
+    }
+
+    async function addKnowledge() {
+      const title = prompt('Entry title:');
+      if (!title) return;
+      
+      const content = prompt('Content (what did you learn?):');
+      if (!content) return;
+      
+      const tagsRaw = prompt('Tags (comma-separated, optional):');
+      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : [];
+      
+      try {
+        await fetch('/api/knowledge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content, tags })
+        });
+        
+        loadKnowledge();
+        addActivity(`Added knowledge: ${title}`, '📚');
+        sounds.play('success');
+      } catch (err) {
+        alert('Error adding knowledge: ' + err.message);
+      }
+    }
+
+    function viewKnowledge(id) {
+      // Could open a modal or expand the card
+      addActivity('Viewed knowledge entry', '📚');
+    }
+
+    // ==========================================
+    // VOICE SYSTEM
+    // ==========================================
+
+    const voice = {
+      recognition: null,
+      synthesis: window.speechSynthesis,
+      isListening: false,
+      isSpeaking: false,
+      supported: false,
+      
+      init() {
+        // Check for browser support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          console.log('Speech recognition not supported');
+          return;
+        }
+        
+        this.supported = true;
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = false;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'en-US';
+        
+        this.recognition.onstart = () => {
+          this.isListening = true;
+          elements.voiceBtn.classList.add('listening');
+          elements.orb.classList.add('thinking');
+          showVoiceToast('Listening...', 'listening');
+          sounds.play('click');
+        };
+        
+        this.recognition.onend = () => {
+          this.isListening = false;
+          elements.voiceBtn.classList.remove('listening');
+          elements.orb.classList.remove('thinking');
+          hideVoiceToast();
+        };
+        
+        this.recognition.onresult = (event) => {
+          let finalTranscript = '';
+          let interimTranscript = '';
+          
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+          
+          // Show interim in input
+          if (interimTranscript) {
+            elements.commandInput.value = interimTranscript;
+          }
+          
+          // Send final transcript
+          if (finalTranscript) {
+            elements.commandInput.value = finalTranscript;
+            this.recognition.stop();
+            setTimeout(() => sendCommand(), 100);
+          }
+        };
+        
+        this.recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          this.isListening = false;
+          elements.voiceBtn.classList.remove('listening');
+          elements.orb.classList.remove('thinking');
+          
+          if (event.error === 'not-allowed') {
+            showVoiceToast('Microphone access denied', 'listening');
+          } else {
+            showVoiceToast('Error: ' + event.error, 'listening');
+          }
+          
+          setTimeout(hideVoiceToast, 2000);
+        };
+      },
+      
+      toggle() {
+        if (!this.supported) {
+          showVoiceToast('Voice not supported in this browser', 'listening');
+          setTimeout(hideVoiceToast, 2000);
+          return;
+        }
+        
+        if (this.isListening) {
+          this.recognition.stop();
+        } else {
+          this.recognition.start();
+        }
+      },
+      
+      speak(text) {
+        if (!elements.ttsToggle.checked) return;
+        
+        // Cancel any ongoing speech
+        this.synthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        
+        // Try to use a good voice
+        const voices = this.synthesis.getVoices();
+        const preferredVoices = voices.filter(v => 
+          v.name.includes('Samantha') || 
+          v.name.includes('Google') ||
+          v.name.includes('Microsoft Zira') ||
+          v.name.includes('Microsoft David')
+        );
+        if (preferredVoices.length > 0) {
+          utterance.voice = preferredVoices[0];
+        }
+        
+        utterance.onstart = () => {
+          this.isSpeaking = true;
+          elements.voiceBtn.classList.add('speaking');
+          elements.orb.classList.add('working');
+          showVoiceToast('Speaking...', 'speaking');
+        };
+        
+        utterance.onend = () => {
+          this.isSpeaking = false;
+          elements.voiceBtn.classList.remove('speaking');
+          elements.orb.classList.remove('working');
+          hideVoiceToast();
+        };
+        
+        this.synthesis.speak(utterance);
+      },
+      
+      stop() {
+        if (this.isListening) this.recognition.stop();
+        if (this.isSpeaking) this.synthesis.cancel();
+      }
+    };
+
+    // Voice UI helpers
+    const elements_voice = {
+      voiceBtn: null,
+      voiceToast: null,
+      voiceToastIcon: null,
+      voiceToastText: null,
+      ttsToggle: null
+    };
+
+    function showVoiceToast(text, type) {
+      const toast = document.getElementById('voiceToast');
+      const icon = document.getElementById('voiceToastIcon');
+      const textEl = document.getElementById('voiceToastText');
+      
+      icon.className = 'voice-toast-icon ' + type;
+      textEl.textContent = text;
+      toast.classList.add('visible');
+    }
+
+    function hideVoiceToast() {
+      document.getElementById('voiceToast').classList.remove('visible');
+    }
+
+    function toggleVoice() {
+      voice.toggle();
+    }
+
+    // ==========================================
+    // SOUND SYSTEM
+    // ==========================================
+
+    const sounds = {
+      ctx: null,
+      enabled: true,
+      
+      init() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      },
+      
+      play(type) {
+        if (!this.enabled || !this.ctx) return;
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        const now = this.ctx.currentTime;
+        
+        switch(type) {
+          case 'click':
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(600, now + 0.05);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+            break;
+            
+          case 'whoosh':
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now);
+            osc.stop(now + 0.15);
+            break;
+            
+          case 'success':
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.1);
+            osc.frequency.setValueAtTime(783.99, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+            break;
+            
+          case 'send':
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+            break;
+            
+          case 'receive':
+            osc.frequency.setValueAtTime(660, now);
+            osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+            break;
+        }
+      }
+    };
+
+    // ==========================================
+    // CONSCIOUSNESS & MOOD SYSTEM
+    // ==========================================
+
+    async function loadConsciousness() {
+      try {
+        const res = await fetch('/api/consciousness');
+        const data = await res.json();
+        
+        // Update mood indicator
+        const moodEmoji = document.getElementById('moodEmoji');
+        const moodValue = document.getElementById('moodValue');
+        const energyFill = document.getElementById('energyFill');
+        
+        if (moodEmoji) moodEmoji.textContent = moodEmojis[data.mood] || '😐';
+        if (moodValue) moodValue.textContent = data.mood || 'Neutral';
+        
+        if (energyFill) {
+          energyFill.style.width = data.energy + '%';
+          energyFill.className = 'energy-fill ' + (
+            data.energy > 70 ? 'high' : 
+            data.energy > 40 ? 'medium' : 'low'
+          );
+        }
+        
+        // Update relationship meter
+        const relationshipLevel = document.getElementById('relationshipLevel');
+        const relationshipFill = document.getElementById('relationshipFill');
+        const interactionCount = document.getElementById('interactionCount');
+        const firstMet = document.getElementById('firstMet');
+        
+        const levelNames = {
+          new: 'New Friend',
+          getting_started: 'Getting Started',
+          acquainted: 'Acquainted',
+          familiar: 'Good Friends',
+          close: 'Close Partner'
+        };
+        
+        const levelPercent = {
+          new: 5,
+          getting_started: 20,
+          acquainted: 40,
+          familiar: 70,
+          close: 100
+        };
+        
+        if (relationshipLevel) {
+          relationshipLevel.textContent = levelNames[data.relationship?.relationshipLevel] || 'New Friend';
+        }
+        if (relationshipFill) {
+          relationshipFill.style.width = (levelPercent[data.relationship?.relationshipLevel] || 5) + '%';
+        }
+        if (interactionCount) {
+          interactionCount.textContent = (data.relationship?.totalInteractions || 0) + ' interactions';
+        }
+        if (firstMet && data.relationship?.firstInteraction) {
+          const date = new Date(data.relationship.firstInteraction);
+          firstMet.textContent = 'Since ' + date.toLocaleDateString();
+        }
+        
+        // Update welcome status with mood context
+        const welcomeStatus = document.getElementById('welcomeStatus');
+        if (welcomeStatus && data.mood) {
+          const statusMessages = {
+            neutral: 'FaxWare is ready. How can I help?',
+            happy: "Feeling good today! What shall we work on?",
+            excited: "Excited to help you out! Let's do something cool!",
+            satisfied: "Just finished some good work. What's next?",
+            focused: "I'm focused and ready for the next task.",
+            tired: "Been working a while, but still here for you.",
+            concerned: "I want to make sure things go smoothly."
+          };
+          welcomeStatus.textContent = statusMessages[data.mood] || statusMessages.neutral;
+        }
+        
+      } catch (err) {
+        console.error('Failed to load consciousness:', err);
+      }
+    }
+
+    // ==========================================
+    // WATCH MODE SYSTEM
+    // ==========================================
+
+    let watchPollInterval = null;
+
+    async function loadWatchMode() {
+      try {
+        const res = await fetch('/api/automation/status');
+        const data = await res.json();
+        
+        const statusDot = document.getElementById('watchStatusDot');
+        const statusText = document.getElementById('watchStatusText');
+        const stopBtn = document.getElementById('watchStopBtn');
+        const logContent = document.getElementById('watchLogContent');
+        const logCount = document.getElementById('watchLogCount');
+        
+        if (statusDot) statusDot.classList.toggle('active', data.active);
+        if (statusText) statusText.textContent = data.active ? 'Automation Running...' : 'Automation Idle';
+        if (stopBtn) stopBtn.disabled = !data.active;
+        if (logCount) logCount.textContent = data.totalActions + ' actions';
+        
+        if (logContent && data.log && data.log.length > 0) {
+          logContent.innerHTML = data.log.reverse().map(item => {
+            const toolIcons = {
+              open_browser: '🌐',
+              open_app: '📱',
+              type_text: '⌨️',
+              press_key: '🔤',
+              mouse_click: '🖱️',
+              screenshot: '📸',
+              SYSTEM: '⚙️'
+            };
+            const time = new Date(item.time).toLocaleTimeString();
+            return `
+              <div class="watch-log-item">
+                <div class="watch-log-icon">${toolIcons[item.tool] || '🔧'}</div>
+                <div class="watch-log-details">
+                  <div class="watch-log-tool">${item.tool}</div>
+                  <div class="watch-log-args">${JSON.stringify(item.args || {})}</div>
+                </div>
+                <div class="watch-log-time">${time}</div>
+              </div>
+            `;
+          }).join('');
+        }
+        
+        // Start polling if on watch panel
+        if (state.currentPanel === 'watch' && !watchPollInterval) {
+          watchPollInterval = setInterval(loadWatchMode, 2000);
+        }
+        
+      } catch (err) {
+        console.error('Failed to load watch mode:', err);
+      }
+    }
+
+    async function stopAutomation() {
+      try {
+        await fetch('/api/automation/stop', { method: 'POST' });
+        loadWatchMode();
+        sounds.play('click');
+      } catch (err) {
+        console.error('Failed to stop automation:', err);
+      }
+    }
+
+    async function runQuickAutomation(type) {
+      sounds.play('send');
+      
+      const automations = {
+        discord: { message: 'Open Discord for me' },
+        email: { message: 'Open Gmail so I can check my email' },
+        browser: { message: 'Open the web browser to Google' },
+        spotify: { message: 'Open Spotify' },
+        code: { message: 'Open VS Code' },
+        screenshot: { message: 'Take a screenshot of my screen' }
+      };
+      
+      const automation = automations[type];
+      if (!automation) return;
+      
+      // Send to chat API
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: automation.message })
+        });
+        
+        const data = await res.json();
+        loadWatchMode();
+        
+        if (data.reply) {
+          addActivity(`Quick automation: ${type}`, '🤖');
+        }
+        
+      } catch (err) {
+        console.error('Quick automation failed:', err);
+      }
+    }
+
+    // ==========================================
+    // SCREENSHOTS SYSTEM
+    // ==========================================
+
+    async function loadScreenshots() {
+      try {
+        const res = await fetch('/api/screenshots');
+        const data = await res.json();
+        
+        const grid = document.getElementById('screenshotsGrid');
+        if (!grid) return;
+        
+        if (data.screenshots && data.screenshots.length > 0) {
+          grid.innerHTML = data.screenshots.map(s => `
+            <div class="screenshot-thumb" onclick="viewScreenshot('${s.path}')">
+              <img src="${s.path}" alt="${s.name}" loading="lazy">
+            </div>
+          `).join('');
+        } else {
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">
+              No screenshots yet
+            </div>
+          `;
+        }
+        
+      } catch (err) {
+        console.error('Failed to load screenshots:', err);
+      }
+    }
+
+    function viewScreenshot(path) {
+      window.open(path, '_blank');
+    }
+
+    // ==========================================
+    // RECIPES SYSTEM
+    // ==========================================
+
+    async function loadRecipes() {
+      try {
+        const res = await fetch('/api/recipes');
+        const data = await res.json();
+        
+        const list = document.getElementById('recipesList');
+        if (!list) return;
+        
+        if (data.recipes && data.recipes.length > 0) {
+          list.innerHTML = data.recipes.map(r => `
+            <div class="recipe-card" onclick="runRecipe('${r.id}')">
+              <div class="recipe-name">${escapeHtml(r.name)}</div>
+              <div class="recipe-desc">${escapeHtml(r.description)}</div>
+              <div class="recipe-meta">
+                <span>${r.steps?.length || 0} steps</span>
+                <span>Used ${r.timesUsed || 0} times</span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = `
+            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+              No recipes yet. Create one!
+            </div>
+          `;
+        }
+        
+      } catch (err) {
+        console.error('Failed to load recipes:', err);
+      }
+    }
+
+    async function runRecipe(id) {
+      sounds.play('send');
+      
+      try {
+        const res = await fetch('/api/recipes/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          loadWatchMode();
+          loadRecipes();
+          addActivity('Recipe executed', '📋');
+        } else {
+          alert('Recipe failed: ' + (data.error || 'Unknown error'));
+        }
+        
+      } catch (err) {
+        console.error('Failed to run recipe:', err);
+      }
+    }
+
+    async function createRecipe() {
+      const name = prompt('Recipe name:');
+      if (!name) return;
+      
+      const description = prompt('Description:');
+      if (!description) return;
+      
+      // Simple recipe creator - in future could have a proper UI
+      const stepsStr = prompt('Steps (format: tool:arg1=val1,arg2=val2;tool2:...):');
+      
+      let steps = [];
+      if (stepsStr) {
+        steps = stepsStr.split(';').map(s => {
+          const [tool, argsStr] = s.split(':');
+          const args = {};
+          if (argsStr) {
+            argsStr.split(',').forEach(a => {
+              const [key, val] = a.split('=');
+              if (key && val) args[key.trim()] = val.trim();
+            });
+          }
+          return { tool: tool.trim(), args, delay: 1000 };
+        }).filter(s => s.tool);
+      }
+      
+      try {
+        await fetch('/api/recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, description, steps })
+        });
+        
+        loadRecipes();
+        sounds.play('success');
+        addActivity(`Created recipe: ${name}`, '📋');
+        
+      } catch (err) {
+        alert('Failed to create recipe: ' + err.message);
+      }
+    }
+
+    // ==========================================
+    // INIT
+    // ==========================================
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize core systems
+      sounds.init();
+      voice.init();
+      
+      // Initialize enterprise systems
+      toast.init();
+      commandPalette.init();
+      settings.load();
+      setupKeyboardShortcuts();
+      
+      await updateGreeting();
+      fetchStatus();
+      loadConsciousness();
+      initParticles();
+      
+      // Show welcome toast
+      setTimeout(() => {
+        toast.info('FaxWare Ready', 'Press Ctrl+K for quick commands');
+      }, 1000);
+      
+      // Initialize onboarding if needed
+      setTimeout(() => onboarding.init(), 2000);
+      
+      // Auto-check for updates
+      if (settings.data.autoUpdate) {
+        setTimeout(async () => {
+          const update = await updater.check();
+          if (update) {
+            updater.showBanner(update.version);
+          }
+        }, 5000);
+      }
+      
+      // Poll status and consciousness
+      setInterval(fetchStatus, 10000);
+      setInterval(loadConsciousness, 15000);
+      
+      // Update uptime
+      setInterval(() => {
+        state.stats.uptime++;
+        elements.uptimeDisplay.textContent = state.stats.uptime + 's';
+      }, 1000);
+      
+      // Clean up watch mode polling when leaving
+      window.addEventListener('beforeunload', () => {
+        if (watchPollInterval) clearInterval(watchPollInterval);
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        // V for voice (when not typing)
+        if (e.key === 'v' && document.activeElement !== elements.commandInput && document.activeElement !== elements.terminalInput) {
+          e.preventDefault();
+          toggleVoice();
+        }
+        
+        // Escape to stop voice
+        if (e.key === 'Escape') {
+          voice.stop();
+        }
+        
+        // Ctrl+1-8 for panel switching
+        if (e.ctrlKey && e.key >= '1' && e.key <= '8') {
+          e.preventDefault();
+          const panels = ['dashboard', 'chat', 'terminal', 'files', 'projects', 'models', 'knowledge', 'watch'];
+          switchPanel(panels[parseInt(e.key) - 1]);
+        }
+      });
+
+      elements.commandInput.focus();
+    });
+  </script>
+</body>
+</html>

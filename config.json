@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "FaxWare OS",
+  "defaultModel": "openai/gpt-4o-mini",
+  "port": 8787,
+  "maxIterations": 15,
+  "autoUpgrade": true,
+  "safeMode": false,
+  "ui": {
+    "sounds": true,
+    "particles": true,
+    "theme": "dark"
+  }
+}

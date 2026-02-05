@@ -1,0 +1,66 @@
+{
+  "recipes": [
+    {
+      "id": "1",
+      "name": "Open Discord",
+      "description": "Launch Discord and wait for it to load",
+      "steps": [
+        {
+          "tool": "open_app",
+          "args": {
+            "app": "discord"
+          },
+          "delay": 2000
+        }
+      ],
+      "created": "2026-02-04T00:00:00.000Z",
+      "timesUsed": 2
+    },
+    {
+      "id": "2",
+      "name": "Quick Web Search",
+      "description": "Open browser and search Google",
+      "steps": [
+        {
+          "tool": "open_browser",
+          "args": {
+            "url": "https://google.com"
+          },
+          "delay": 1500
+        },
+        {
+          "tool": "screenshot",
+          "args": {
+            "name": "google_opened"
+          },
+          "delay": 500
+        }
+      ],
+      "created": "2026-02-04T00:00:00.000Z",
+      "timesUsed": 0
+    },
+    {
+      "id": "3",
+      "name": "Check Email",
+      "description": "Open Gmail in browser",
+      "steps": [
+        {
+          "tool": "open_browser",
+          "args": {
+            "url": "https://mail.google.com"
+          },
+          "delay": 2000
+        },
+        {
+          "tool": "screenshot",
+          "args": {
+            "name": "gmail_opened"
+          },
+          "delay": 500
+        }
+      ],
+      "created": "2026-02-04T00:00:00.000Z",
+      "timesUsed": 0
+    }
+  ]
+}

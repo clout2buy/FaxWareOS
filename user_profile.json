@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "user": {
+    "name": "Noah",
+    "preferredName": "Noah",
+    "timezone": null,
+    "communicationStyle": null
+  },
+  "preferences": {
+    "codeStyle": null,
+    "favoriteLanguages": [],
+    "projectTypes": [],
+    "workHours": null
+  },
+  "relationship": {
+    "firstInteraction": "2026-02-05T04:04:19.634Z",
+    "totalInteractions": 9,
+    "notableConversations": [],
+    "sharedJokes": [],
+    "importantDates": []
+  },
+  "patterns": {
+    "activeHours": {
+      "23": 9
+    },
+    "commonRequests": [],
+    "frustrationTriggers": [],
+    "excitementTriggers": []
+  },
+  "context": {
+    "currentProjects": [],
+    "recentTopics": [],
+    "pendingTasks": []
+  }
+}

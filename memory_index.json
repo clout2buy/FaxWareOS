@@ -1,0 +1,178 @@
+{
+  "version": "1.0.0",
+  "layers": {
+    "immediate": {
+      "maxTokens": 500,
+      "description": "Current task context, loaded into every prompt"
+    },
+    "session": {
+      "maxItems": 50,
+      "description": "Today's conversation, loaded on demand"
+    },
+    "longTerm": {
+      "maxItems": 1000,
+      "description": "Indexed summaries, searched not loaded"
+    },
+    "archive": {
+      "description": "Compressed old memories, rarely accessed"
+    }
+  },
+  "summaries": [
+    {
+      "id": "1770264261781",
+      "type": "conversation",
+      "content": "User asked: \"Open the web browser to Google\" - Result: 1 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"open",
+        "browser",
+        "google\"",
+        "result:",
+        "tools",
+        "succeeded"
+      ],
+      "created": "2026-02-05T04:04:21.781Z"
+    },
+    {
+      "id": "1770264291673",
+      "type": "conversation",
+      "content": "User asked: \"open browser and google cow pics, then goto images and pick the first one\" - Result: 6 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"open",
+        "browser",
+        "google",
+        "pics,",
+        "then",
+        "goto",
+        "images",
+        "pick"
+      ],
+      "created": "2026-02-05T04:04:51.673Z"
+    },
+    {
+      "id": "1770264533774",
+      "type": "conversation",
+      "content": "User asked: \"ok goto a browser and google youtube. goto the youtube search bar and look up the video https://www.youtube.com/watch?v=Ha36SB8Exrs\" - Result: 6 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "goto",
+        "browser",
+        "google",
+        "youtube.",
+        "youtube",
+        "search",
+        "look",
+        "video"
+      ],
+      "created": "2026-02-05T04:08:53.774Z"
+    },
+    {
+      "id": "1770264573441",
+      "type": "conversation",
+      "content": "User asked: \"open new tab and goto this https://www.youtube.com/watch?v=Ha36SB8Exrs\" - Result: 2 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"open",
+        "goto",
+        "this",
+        "https://www.youtube.com/watch?v=ha36sb8exrs\"",
+        "result:",
+        "tools",
+        "succeeded"
+      ],
+      "created": "2026-02-05T04:09:33.441Z"
+    },
+    {
+      "id": "1770264649734",
+      "type": "conversation",
+      "content": "User asked: \"goto my opened discord, goto sam in chat, message him fuck u from faxware\" - Result: 2 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"goto",
+        "opened",
+        "discord,",
+        "goto",
+        "chat,",
+        "message",
+        "fuck",
+        "from"
+      ],
+      "created": "2026-02-05T04:10:49.734Z"
+    },
+    {
+      "id": "1770264673869",
+      "type": "conversation",
+      "content": "User asked: \"its called @-sam discord\" - Result: 2 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"its",
+        "called",
+        "@-sam",
+        "discord\"",
+        "result:",
+        "tools",
+        "succeeded"
+      ],
+      "created": "2026-02-05T04:11:13.869Z"
+    },
+    {
+      "id": "1770264713570",
+      "type": "conversation",
+      "content": "User asked: \"ok goto the discord tab in current browser goto sam say fuck u from faxware and send it\" - Result: 4 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "goto",
+        "discord",
+        "current",
+        "browser",
+        "fuck",
+        "from",
+        "faxware",
+        "send"
+      ],
+      "created": "2026-02-05T04:11:53.570Z"
+    },
+    {
+      "id": "1770264743625",
+      "type": "conversation",
+      "content": "User asked: \"Open Discord for me\" - Result: 0 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "\"open",
+        "discord",
+        "result:",
+        "tools",
+        "succeeded"
+      ],
+      "created": "2026-02-05T04:12:23.625Z"
+    },
+    {
+      "id": "1770264780726",
+      "type": "conversation",
+      "content": "User asked: \"ok goto google and look up skitsofrenic postings and find sum on that for me\" - Result: 5 tools succeeded",
+      "keywords": [
+        "user",
+        "asked:",
+        "goto",
+        "google",
+        "look",
+        "skitsofrenic",
+        "postings",
+        "find",
+        "that",
+        "result:"
+      ],
+      "created": "2026-02-05T04:13:00.726Z"
+    }
+  ],
+  "searchIndex": []
+}

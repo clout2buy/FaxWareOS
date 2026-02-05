@@ -1,0 +1,49 @@
+{
+  "name": "faxware-os",
+  "version": "1.0.0",
+  "description": "FaxWare OS - Self-Evolving AI Agent with Full System Control",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "powershell -ExecutionPolicy Bypass -File build/build-installer.ps1",
+    "build:zip": "powershell -ExecutionPolicy Bypass -File build/build-installer.ps1 -SkipPkg -SkipInno"
+  },
+  "bin": {
+    "faxware": "./faxware.cmd"
+  },
+  "pkg": {
+    "targets": ["node18-win-x64"],
+    "outputPath": "dist",
+    "assets": [
+      "web/**/*",
+      "agent/**/*",
+      "assets/**/*",
+      "lib/**/*"
+    ]
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "automation",
+    "assistant",
+    "openrouter",
+    "gpt",
+    "claude",
+    "faxware"
+  ],
+  "author": "FaxWare Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clout2buy/FaxWareOS.git"
+  },
+  "homepage": "https://github.com/clout2buy/FaxWareOS",
+  "bugs": {
+    "url": "https://github.com/clout2buy/FaxWareOS/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {}
+}
