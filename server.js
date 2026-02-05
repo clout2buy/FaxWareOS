@@ -16,7 +16,7 @@ try {
 // =============================================================================
 // FAXWARE v1.0.0 - SELF-EVOLVING AI AGENT
 // =============================================================================
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const PORT = process.env.PORT || 8787;
 const ROOT = __dirname;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";

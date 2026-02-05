@@ -1,6 +1,6 @@
 {
   "name": "faxware-os",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "FaxWare OS - Self-Evolving AI Agent with Full System Control",
   "main": "server.js",
   "scripts": {
